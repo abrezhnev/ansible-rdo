@@ -3,6 +3,7 @@
 
 - hosts: all
   roles:
+   - accessible
    - common
 
 - hosts: openstack_controller

@@ -1,7 +1,10 @@
 [openstack_controller]
-openstack-controller
+10.242.108.8
 
 [openstack_compute]
-openstack-compute
+10.242.108.8
+10.242.108.9
+10.242.108.10
+10.242.108.11
 
 
