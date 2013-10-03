@@ -1,5 +1,6 @@
 ---
 # Variables for openstack
+openstack_release: havana
 
 keystone_db_pass: keystone
 keystone_admin_token: ADMIN

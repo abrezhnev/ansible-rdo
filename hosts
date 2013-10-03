@@ -1,10 +1,13 @@
 [openstack_controller]
-10.242.108.8
+osc01.rc.fas.harvard.edu
 
 [openstack_compute]
-10.242.108.8
-10.242.108.9
-10.242.108.10
-10.242.108.11
+osc01.rc.fas.harvard.edu
+osc02.rc.fas.harvard.edu
+osc03.rc.fas.harvard.edu
+osc04.rc.fas.harvard.edu
+
+[gluster_nodes]
+
 
 
