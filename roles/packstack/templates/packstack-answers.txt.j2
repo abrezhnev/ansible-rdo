@@ -1,5 +1,17 @@
 [general]
 
+{% macro ip_list(groupname) -%}{% 
+
+  for host in groups[groupname] 
+
+    %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}{% 
+    
+    if not loop.last %}, {% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+
 # Path to a Public key to install on servers. If a usable key has not
 # been installed on the remote servers the user will be prompted for a
 # password and this key will be installed so the password will not be
@@ -11,34 +23,34 @@ CONFIG_MYSQL_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Image
 # Service (Glance)
-CONFIG_GLANCE_INSTALL=y
+CONFIG_GLANCE_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack Block
 # Storage (Cinder)
-CONFIG_CINDER_INSTALL=y
+CONFIG_CINDER_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack Compute
 # (Nova)
-CONFIG_NOVA_INSTALL=y
+CONFIG_NOVA_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Networking (Neutron)
-CONFIG_NEUTRON_INSTALL=y
+CONFIG_NEUTRON_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Dashboard (Horizon)
-CONFIG_HORIZON_INSTALL=y
+CONFIG_HORIZON_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=y
+CONFIG_SWIFT_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
-CONFIG_CEILOMETER_INSTALL=y
+CONFIG_CEILOMETER_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install Heat
-CONFIG_HEAT_INSTALL=y
+CONFIG_HEAT_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install the OpenStack
 # Client packages. An admin "rc" file will also be installed
@@ -50,7 +62,7 @@ CONFIG_NTP_SERVERS=
 
 # Set to 'y' if you would like Packstack to install Nagios to monitor
 # openstack hosts
-CONFIG_NAGIOS_INSTALL=y
+CONFIG_NAGIOS_INSTALL=n
 
 # Comma separated list of servers to be excluded from installation in
 # case you are running Packstack the second time with the same answer
@@ -59,7 +71,7 @@ CONFIG_NAGIOS_INSTALL=y
 EXCLUDE_SERVERS=
 
 # The IP address of the server on which to install MySQL
-CONFIG_MYSQL_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_MYSQL_HOST={{ ip_list('openstack_controller') }}
 
 # Username for the MySQL admin user
 CONFIG_MYSQL_USER=root
@@ -68,12 +80,10 @@ CONFIG_MYSQL_USER=root
 CONFIG_MYSQL_PW=f462b93ce86d4751
 
 # The IP address of the server on which to install the QPID service
-CONFIG_QPID_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_QPID_HOST={{ ip_list('openstack_controller') }}
 
 # The IP address of the server on which to install Keystone
-CONFIG_KEYSTONE_HOST={% for host in groups['openstack_keystone'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_KEYSTONE_HOST={{ ip_list('openstack_keystone') }}
 
 # The password to use for the Keystone to access DB
 CONFIG_KEYSTONE_DB_PW=912eb0cc626b4348
@@ -91,8 +101,7 @@ CONFIG_KEYSTONE_DEMO_PW=b841c905e2e94d21
 CONFIG_KEYSTONE_TOKEN_FORMAT=PKI
 
 # The IP address of the server on which to install Glance
-CONFIG_GLANCE_HOST={% for host in groups['openstack_glance'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_GLANCE_HOST={{ ip_list('openstack_glance') }}
 
 # The password to use for the Glance to access DB
 CONFIG_GLANCE_DB_PW=44d7f83547d54b41
@@ -101,8 +110,7 @@ CONFIG_GLANCE_DB_PW=44d7f83547d54b41
 CONFIG_GLANCE_KS_PW=4994deed2672407e
 
 # The IP address of the server on which to install Cinder
-CONFIG_CINDER_HOST={% for host in groups['openstack_cinder'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_CINDER_HOST={{ ip_list('openstack_cinder') }}
 
 # The password to use for the Cinder to access DB
 CONFIG_CINDER_DB_PW=29e432f76d54438c
@@ -124,35 +132,33 @@ CONFIG_CINDER_VOLUMES_SIZE=20G
 
 # A single or comma separated list of gluster volume shares to mount,
 # eg: ip-address:/vol-name
-CONFIG_CINDER_GLUSTER_MOUNTS={% for host in groups['gluster_nodes'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} ,{%  endfor %}
+CONFIG_CINDER_GLUSTER_MOUNTS={{ ip_list('gluster_nodes') }}
 
 # A single or comma seprated list of NFS exports to mount, eg: ip-
 # address:/export-name
 CONFIG_CINDER_NFS_MOUNTS=
 
+
 # The IP address of the server on which to install the Nova API
 # service
-CONFIG_NOVA_API_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NOVA_API_HOST={{ ip_list('openstack_controller') }}
 
 
 # The IP address of the server on which to install the Nova Cert
 # service
-CONFIG_NOVA_CERT_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_NOVA_CERT_HOST={{ ip_list('openstack_controller') }}
 
 # The IP address of the server on which to install the Nova VNC proxy
-CONFIG_NOVA_VNCPROXY_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_NOVA_VNCPROXY_HOST={{ ip_list('openstack_controller') }}
 
 # A comma separated list of IP addresses on which to install the Nova
 # Compute services
-CONFIG_NOVA_COMPUTE_HOSTS={% for host in groups['openstack_compute'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} ,{%  endfor %}
 
+CONFIG_NOVA_COMPUTE_HOSTS={{ ip_list('openstack_compute') }}
 
 # The IP address of the server on which to install the Nova Conductor
 # service
-CONFIG_NOVA_CONDUCTOR_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
-
+CONFIG_NOVA_CONDUCTOR_HOST={{ ip_list('openstack_controller') }}
 
 # The password to use for the Nova to access DB
 CONFIG_NOVA_DB_PW=b7fc9e4eb5d644e8
@@ -162,7 +168,7 @@ CONFIG_NOVA_KS_PW=9ba22d90d512424b
 
 # The IP address of the server on which to install the Nova Scheduler
 # service
-CONFIG_NOVA_SCHED_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NOVA_SCHED_HOST={{ ip_list('openstack_controller') }}
 
 # The overcommitment ratio for virtual to physical CPUs. Set to 1.0
 # to disable CPU overcommitment
@@ -177,7 +183,7 @@ CONFIG_NOVA_COMPUTE_PRIVIF=eth1
 
 # The IP address of the server on which to install the Nova Network
 # service
-CONFIG_NOVA_NETWORK_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NOVA_NETWORK_HOST={{ ip_list('openstack_controller') }}
 
 # Nova network manager
 CONFIG_NOVA_NETWORK_MANAGER=nova.network.manager.FlatDHCPManager
@@ -210,9 +216,11 @@ CONFIG_NOVA_NETWORK_NUMBER=1
 # Number of addresses in each private subnet
 CONFIG_NOVA_NETWORK_SIZE=255
 
+
+
 # The IP addresses of the server on which to install the Neutron
 # server
-CONFIG_NEUTRON_SERVER_HOST={% for host in groups['openstack_neutron'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NEUTRON_SERVER_HOST={{ ip_list('openstack_neutron') }}
 
 # The password to use for Neutron to authenticate with Keystone
 CONFIG_NEUTRON_KS_PW=1044837863f4461b
@@ -222,7 +230,7 @@ CONFIG_NEUTRON_DB_PW=36c1be4f8f124499
 
 # A comma separated list of IP addresses on which to install Neutron
 # L3 agent
-CONFIG_NEUTRON_L3_HOSTS={% for host in groups['openstack_neutron_l3'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} ,{%  endfor %}
+CONFIG_NEUTRON_L3_HOSTS={{ ip_list('openstack_neutron_l3') }}
 
 # The name of the bridge that the Neutron L3 agent will use for
 # external traffic, or 'provider' if using provider networks
@@ -230,14 +238,14 @@ CONFIG_NEUTRON_L3_EXT_BRIDGE=br-ex
 
 # A comma separated list of IP addresses on which to install Neutron
 # DHCP agent
-CONFIG_NEUTRON_DHCP_HOSTS={% for host in groups['openstack_neutron_dhcp'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NEUTRON_DHCP_HOSTS={{ ip_list('openstack_neutron_dhcp') }}
 
 # The name of the L2 plugin to be used with Neutron
 CONFIG_NEUTRON_L2_PLUGIN=openvswitch
 
 # A comma separated list of IP addresses on which to install Neutron
 # metadata agent
-CONFIG_NEUTRON_METADATA_HOSTS={% for host in groups['openstack_neutron'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NEUTRON_METADATA_HOSTS={{ ip_list('openstack_neutron') }}
 
 # A comma separated list of IP addresses on which to install Neutron
 # metadata agent
@@ -279,10 +287,10 @@ CONFIG_NEUTRON_OVS_TUNNEL_IF=
 
 # The IP address of the server on which to install the OpenStack
 # client packages. An admin "rc" file will also be installed
-CONFIG_OSCLIENT_HOST={% for host in groups['openstack_controller'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_OSCLIENT_HOST={{ ip_list('openstack_controller') }}
 
 # The IP address of the server on which to install Horizon
-CONFIG_HORIZON_HOST={% for host in groups['openstack_horizon'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_HORIZON_HOST={{ ip_list('openstack_horizon') }}
 
 # To set up Horizon communication over https set this to "y"
 CONFIG_HORIZON_SSL=y
@@ -297,8 +305,7 @@ CONFIG_SSL_KEY=
 
 # The IP address on which to install the Swift proxy service
 # (currently only single proxy is supported)
-CONFIG_SWIFT_PROXY_HOSTS={% for host in groups['swift_proxy_nodes'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}, {%  endfor %}
-
+CONFIG_SWIFT_PROXY_HOSTS={{ ip_list('swift_proxy_nodes') }}
 
 # The password to use for the Swift to authenticate with Keystone
 CONFIG_SWIFT_KS_PW=c2c3ab365cca4a6b
@@ -309,7 +316,8 @@ CONFIG_SWIFT_KS_PW=c2c3ab365cca4a6b
 # on 127.0.0.1 as a swift storage device(packstack does not create the
 # filesystem, you must do this first), if /dev is omitted Packstack
 # will create a loopback device for a test setup
-CONFIG_SWIFT_STORAGE_HOSTS={% for host in groups['swift_storage_nodes'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}, {%  endfor %}
+CONFIG_SWIFT_STORAGE_HOSTS={{ ip_list('swift_storage_nodes') }}
+
 
 # Number of swift storage zones, this number MUST be no bigger than
 # the number of storage devices configured
@@ -342,7 +350,7 @@ CONFIG_PROVISION_TEMPEST_REPO_REVISION=master
 CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE=n
 
 # The IP address of the server on which to install Heat service
-CONFIG_HEAT_HOST={% for host in groups['openstack_heat'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_HEAT_HOST={{ ip_list('openstack_heat') }}
 
 # The password used by Heat user to authenticate against MySQL
 CONFIG_HEAT_DB_PW=2cf0e8b5a31c4380
@@ -360,14 +368,14 @@ CONFIG_HEAT_CFN_INSTALL=n
 
 # The IP address of the server on which to install Heat CloudWatch
 # API service
-CONFIG_HEAT_CLOUDWATCH_HOST={% for host in groups['openstack_heat'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_HEAT_CLOUDWATCH_HOST={{ ip_list('openstack_heat') }}
 
 # The IP address of the server on which to install Heat
 # CloudFormation API service
-CONFIG_HEAT_CFN_HOST={% for host in groups['openstack_heat'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_HEAT_CFN_HOST={{ ip_list('openstack_heat') }}
 
 # The IP address of the server on which to install Ceilometer
-CONFIG_CEILOMETER_HOST={% for host in groups['openstack_heat'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_CEILOMETER_HOST={{ ip_list('openstack_heat') }}
 
 # Secret key for signing metering messages.
 CONFIG_CEILOMETER_SECRET=594f5648c9fe4ef5
@@ -383,7 +391,7 @@ CONFIG_USE_EPEL=n
 CONFIG_REPO=
 
 # The IP address of the server on which to install the Nagios server
-CONFIG_NAGIOS_HOST={% for host in groups['openstack_heat'] %}{{ hostvars[host]['ansible_'+iface].ipv4.address }} {%  endfor %}
+CONFIG_NAGIOS_HOST={{ ip_list('openstack_heat') }}
 
 # The password of the nagiosadmin user on the Nagios server
 CONFIG_NAGIOS_PW=c1c6825150344bee

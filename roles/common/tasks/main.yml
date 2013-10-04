@@ -4,7 +4,7 @@
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
 
-- name: copy yum repo files 
+- name: copy EPEL yum repo files 
   copy: src=epel.repo  dest=/etc/yum.repos.d/
 
 - name: Create the RDO repo file

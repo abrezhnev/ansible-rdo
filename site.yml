@@ -3,7 +3,7 @@
 
 - hosts: all
   roles:
-   - accessible
+   - huit-accessible
    - common
 
 - hosts: openstack_controller
