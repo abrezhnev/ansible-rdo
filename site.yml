@@ -8,7 +8,9 @@
 
 - hosts: openstack_controller
   roles:
-   - controller
+   - packstack
+   - post-config
+#   - controller
 
 - hosts: openstack_compute
   roles:

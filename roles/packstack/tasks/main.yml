@@ -1,0 +1,12 @@
+---
+# Run packstack
+
+- name: copy packstack answers file
+  copy: src=epel.repo  dest=/etc/yum.repos.d/
+
+- name: Create packstack answers file
+  template: src=packstack-answers.txt.j2 dest=/tmp/packstack-answers.txt
+  
+- name: Now run packstack ...
+  shell: packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
+  
