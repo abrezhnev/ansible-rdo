@@ -182,4 +182,10 @@
       - /var/lib/mysql
       - /etc/mysql
       - /etc/my.cnf
-      - /root/.my.cnf    
+      - /root/.my.cnf
+
+   - name: Remove remaining vestiges of other settings
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /etc/profile.d/http_proxy.sh
