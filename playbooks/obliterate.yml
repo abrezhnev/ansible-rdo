@@ -1,0 +1,159 @@
+#
+#
+# Playbook to remove aopenstack completely from all hosts
+#  USE WITH CAUTION
+#
+
+- hosts: all
+  tasks:
+  
+   - name: Shutdown all services     
+     service: name={{ item }} state=stopped
+     ignore_errors: yes
+     with_items:
+       - openstack-keystone
+       - openstack-glance-api
+       - openstack-glance-registry
+       - openstack-nova-api
+       - httpd
+
+   - name: Remove all OpenStack packages
+     yum: name={{ item }} state=removed
+     ignore_errors: yes
+     with_items:
+       - openstack-ceilometer-api 
+       - openstack-ceilometer-central 
+       - openstack-ceilometer-collector 
+       - openstack-ceilometer-common 
+       - openstack-ceilometer-compute 
+       - openstack-cinder-doc 
+       - openstack-cinder 
+       - openstack-dashboard 
+       - openstack-dashboard-theme 
+       - openstack-foreman-installer 
+       - openstack-glance-doc 
+       - openstack-glance 
+       - openstack-heat-api-cfn 
+       - openstack-heat-api-cloudwatch 
+       - openstack-heat-api 
+       - openstack-heat-common 
+       - openstack-heat-engine 
+       - openstack-keystone-doc 
+       - openstack-keystone 
+       - openstack-neutron-bigswitch 
+       - openstack-neutron-brocade 
+       - openstack-neutron-cisco 
+       - openstack-neutron-hyperv 
+       - openstack-neutron-linuxbridge 
+       - openstack-neutron-meetering-agent 
+       - openstack-neutron-mellanox 
+       - openstack-neutron-metaplugin 
+       - openstack-neutron-midonet 
+       - openstack-neutron-ml2 
+       - openstack-neutron-nec 
+       - openstack-neutron-nicira 
+       - openstack-neutron 
+       - openstack-neutron-openvswitch 
+       - openstack-neutron-plumgrid 
+       - openstack-neutron-ryu 
+       - openstack-neutron-vpn-agent 
+       - openstack-nova-api 
+       - openstack-nova-cells 
+       - openstack-nova-cert 
+       - openstack-nova-common 
+       - openstack-nova-compute 
+       - openstack-nova-conductor 
+       - openstack-nova-console 
+       - openstack-nova-doc 
+       - openstack-nova-network 
+       - openstack-nova 
+       - openstack-nova-novncproxy 
+       - openstack-nova-objectstore 
+       - openstack-nova-scheduler 
+       - openstack-nova-volume 
+       - openstack-packstack 
+       - openstack-quantum-cisco 
+       - openstack-quantum-linuxbridge 
+       - openstack-quantum-metaplugin 
+       - openstack-quantum-nec 
+       - openstack-quantum-nicira 
+       - openstack-quantum 
+       - openstack-quantum-openvswitch 
+       - openstack-quantum-ryu 
+       - openstack-savanna 
+       - openstack-selinux 
+       - openstack-swift-account 
+       - openstack-swift-container 
+       - openstack-swift-doc 
+       - openstack-swift 
+       - openstack-swift-object 
+       - openstack-swift-plugin-swift3 
+       - openstack-swift-proxy 
+       - openstack-utils 
+       - packstack-modules-puppet 
+       - python-ceilometerclient-doc 
+       - python-ceilometerclient 
+       - python-ceilometer 
+       - python-cinderclient 
+       - python-cinder 
+       - python-django-horizon 
+       - python-django-openstack-auth 
+       - python-glanceclient-doc 
+       - python-glanceclient 
+       - python-heatclient-doc 
+       - python-heatclient 
+       - python-keystoneclient-doc 
+       - python-keystoneclient 
+       - python-neutronclient 
+       - python-nova-adminclient 
+       - python-novaclient-doc 
+       - python-novaclient 
+       - python-oslo-config-doc 
+       - python-oslo-config 
+       - python-quantumclient 
+       - python-savannaclient 
+       - python-swiftclient-doc 
+       - python-swiftclient 
+       - python-troveclient 
+       - rubygem-openstack-quantum-client-doc 
+       - rubygem-openstack-quantum-client 
+       
+   - name: Remove all OpenStack configs
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /etc/keystone
+      - /etc/glance
+      - /etc/cinder
+      - /etc/nova
+      - /etc/quantum
+      - /etc/neutron
+      - /etc/heat
+      - /etc/swift  
+      - /etc/savanna     
+       
+   - name: Install package that the followiing needs on target hosts
+     yum: name=MySQL-python state=present
+         
+   - name: Remove all the MySQL databases
+     mysql_db: name={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - keystone
+      - glance
+      - cinder
+      - nova
+      - quantum
+      - neutron
+      - quantum_ovs
+      - neutron_ovs
+      - heat
+      - ceilometer     
+          
+   - name: Remove all packstack logs and trash
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /tmp/packstack.log
+      - /var/tmp/packstack
+      - /tmp/packstack-answers.txt          
