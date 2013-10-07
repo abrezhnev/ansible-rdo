@@ -1,9 +1,11 @@
 ---
 # Run packstack
 
-- name: copy packstack answers file
-  copy: src=epel.repo  dest=/etc/yum.repos.d/
-
+- name: install needed packages for packstack to operate
+  yum: name={{ item }} state=present
+  with_items:
+   - openstack-packstack 
+       
 - name: Create packstack answers file
   template: src=packstack-answers.txt.j2 dest=/tmp/packstack-answers.txt
   
