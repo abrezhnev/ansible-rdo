@@ -13,6 +13,6 @@
 - name: copy in authorized_keys file for local user
   copy: src=authorized_keys  dest=/var/lib/local/.ssh/authorized_keys mode=0600 owner=local
   
-- name: set the http_proxy
-  copy: src=http_proxy.sh  dest=/etc/profile.d/http_proxy.sh mode=0755
+#- name: For FAS RC environment, set the http_proxy
+#  copy: src=http_proxy.sh  dest=/etc/profile.d/http_proxy.sh mode=0755
     
