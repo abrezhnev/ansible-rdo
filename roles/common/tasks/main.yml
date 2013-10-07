@@ -33,4 +33,7 @@
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
  
+- name: Install the openstack utils packge
+  yum:  name=openstack-utils state=installed
+
 - include: openvswitch-upgrade.yml 
