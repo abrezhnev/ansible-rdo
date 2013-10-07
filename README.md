@@ -1,9 +1,22 @@
 # Deploying OpenStack with Ansible
 
-- Requires Ansible 1.2
-- Expects Red Hat Enterpise Linux or CentOS 6 hosts (64 bit)
-- Kernel Version 2.6.32-358.2.1.el6.x86_64
+We've modified this for our purposes in HUIT, and will update to work for the Havana release as well.
 
+Currently, the focus is on getting this to setup an environment in which `packstack` from RDO will work correctly.
+
+- Requires Ansible 1.2
+- Expects an RDO-compatbile distribution.
+
+## Quickstart
+
+Install ansible (v1.2 or later, I believe) and define the hosts in the `hosts` file to meet your environment.
+
+Once these things are setup, and ansible is in your path, you can run the build via the comand line:
+
+    ansible-playbook   -u root  -i hosts  site.yml 
+
+The `site.yml` file defines how host groups will have roles applied to them. This also 
+uses the remote user `root`; this can be changed as needed, and 
 
 ## A Primer into OpenStack Architecture
 
