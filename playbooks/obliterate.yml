@@ -117,7 +117,11 @@
        - python-troveclient 
        - rubygem-openstack-quantum-client-doc 
        - rubygem-openstack-quantum-client 
-       
+
+   - name: Remove all RDO release pkg
+     yum: name=rdo-release state=removed
+     ignore_errors: yes
+            
    - name: Remove all OpenStack configs
      file: path={{ item }} state=absent
      ignore_errors: yes
@@ -130,8 +134,16 @@
       - /etc/neutron
       - /etc/heat
       - /etc/swift  
-      - /etc/savanna     
+      - /etc/savanna    
        
+   - name: Remove all OpenStack working dirs
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /var/lib/cinder
+      - /var/lib/glance
+      - /var/lib/nova
+             
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
          
@@ -145,15 +157,29 @@
       - nova
       - quantum
       - neutron
-      - quantum_ovs
-      - neutron_ovs
+      - ovs_quantum
+      - ovs_neutron
       - heat
       - ceilometer     
           
-   - name: Remove all packstack logs and trash
+   - name: Remove all packstack logs and settings
      file: path={{ item }} state=absent
      ignore_errors: yes
      with_items:
       - /tmp/packstack.log
       - /var/tmp/packstack
-      - /tmp/packstack-answers.txt          
+      - /tmp/packstack-answers.txt   
+      - /root/keystonerc_admin      
+      
+   - name: Remove MySQL
+     yum: name=mysql-server state=removed
+     ignore_errors: yes       
+
+   - name: Remove remaining vestiges of MySQL
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /var/lib/mysql
+      - /etc/mysql
+      - /etc/my.cnf
+      - /root/.my.cnf    

@@ -5,10 +5,19 @@
   yum: name={{ item }} state=present
   with_items:
    - openstack-packstack 
-       
+
+- name: Copy over packstack passwores helper script
+  copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
+  
+- name: Create a packstack passwords answer file
+  shell: creates=/tmp/packstack-passwords.txt  /tmp/create-packstack-passwords.sh
+      
 - name: Create packstack answers file
   template: src=packstack-answers.txt.j2 dest=/tmp/packstack-answers.txt
   
-- name: Now run packstack ...
-  shell: packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
+- name: Append passwords to packstack answers file  
+  shell: cat /tmp/packstack-passwords.txt  >> /tmp/packstack-answers.txt
+  
+#- name: Now run packstack ...
+#  shell: packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
   

@@ -14,8 +14,8 @@
 
 - hosts: openstack_compute
   roles:
-   - compute
+#   - compute
  
-- hosts: gluster_nodes
-  roles:
-   - gluster
+#- hosts: gluster_nodes
+#  roles:
+#   - gluster
