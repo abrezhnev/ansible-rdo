@@ -13,10 +13,28 @@ Install ansible (v1.2 or later, I believe) and define the hosts in the `hosts` f
 
 Once these things are setup, and ansible is in your path, you can run the build via the comand line:
 
-    ansible-playbook   -u root  -i hosts  site.yml 
+    ansible-playbook  -s -u remote-user  -i hosts  site.yml 
 
-The `site.yml` file defines how host groups will have roles applied to them. This also 
-uses the remote user `root`; this can be changed as needed, and 
+where you set the "remote-user" to the one you've specified. The `site.yml` file defines how host groups 
+will have roles applied to them. Often we use the remote user `root`; this can be changed as needed, and 
+for example the options would be "-s -u ec2-user" on EC2 instances.
+
+To clean up after a failed build, use the "obliterate" playbook. On EC2 this looks like:
+
+    ansible-playbook -s -u ec2-user -i ec2-hosts playbooks/obliterate.yml 
+
+
+## The Process
+
+By setting up the `hosts` file based on the target categories for your hosts, the current version 
+of the playbook will create a suitable packstack "answers" file specifying the IP address of hosts
+on which target services should be installed. Thus ansuble is mostly used to convey these categories
+to packstack, and launch the build on the primary controller host.
+
+See
+
+- http://openstack.redhat.com
+- https://wiki.openstack.org/wiki/Packstack
 
 ## A Primer into OpenStack Architecture
 
