@@ -168,7 +168,8 @@
      with_items:
       - /tmp/packstack.log
       - /var/tmp/packstack
-      - /tmp/packstack-answers.txt   
+      - /tmp/packstack-answers.txt  
+      - /tmp/packstack-passwords.txt       
       - /root/keystonerc_admin      
       
    - name: Remove MySQL
@@ -189,3 +190,4 @@
      ignore_errors: yes
      with_items:
       - /etc/profile.d/http_proxy.sh
+
