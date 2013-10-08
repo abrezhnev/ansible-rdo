@@ -1,15 +1,23 @@
 ---
+
 # The common tasks
 
+- name: avoid an update to cloud-init that might break access
+  lineinfile: dest=/etc/yum.conf
+              regexp="^exclude=cloud-init" 
+              state=present 
+              create=yes
+              line="exclude=cloud-init kernel"  
+                       
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
 
-- name: copy EPEL yum repo files 
+- name: copy EPEL yum repo files
   copy: src=epel.repo  dest=/etc/yum.repos.d/
 
 - name: Create the RDO repo file
   template: src=rdo-openstack.repo.j2 dest=/etc/yum.repos.d/rdo.repo
-  
+
 - name: Create the GPG key for EPEL
   copy: src=RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
 
@@ -22,7 +30,7 @@
    - dbus
    - libselinux-python
    - openssl-devel
-  notify: restart services 
+  notify: restart services
   
 - name: Disable selinux dynamically
   shell: creates=/etc/sysconfig/selinux.disabled setenforce 0 ; touch /etc/sysconfig/selinux.disabled
@@ -30,10 +38,11 @@
 - name: Disable SELinux in conf file
   copy: src=selinux dest=/etc/sysconfig/selinux
 
+
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
  
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
 
-- include: openvswitch-upgrade.yml 
+- include: openvswitch-upgrade.yml
