@@ -37,7 +37,7 @@ CONFIG_NOVA_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Networking (Neutron)
-CONFIG_NEUTRON_INSTALL=n
+CONFIG_NEUTRON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Dashboard (Horizon)
@@ -121,7 +121,7 @@ CONFIG_CINDER_HOST={{ ip_list('openstack_cinder') }}
 #CONFIG_CINDER_KS_PW=cd12e6350e114a6a
 
 # The Cinder backend to use, valid options are: lvm, gluster, nfs
-CONFIG_CINDER_BACKEND=lvm
+CONFIG_CINDER_BACKEND={{ cinder_backend }}
 
 # Create Cinder's volumes group. This should only be done for testing
 # on a proof-of-concept installation of Cinder.  This will create a
@@ -130,7 +130,7 @@ CONFIG_CINDER_VOLUMES_CREATE=y
 
 # Cinder's volumes group size. Note that actual volume size will be
 # extended with 3% more space for VG metadata.
-CONFIG_CINDER_VOLUMES_SIZE=20G
+CONFIG_CINDER_VOLUMES_SIZE={{ cinder_volume_size }}
 
 # A single or comma separated list of gluster volume shares to mount,
 # eg: ip-address:/vol-name
@@ -138,13 +138,11 @@ CONFIG_CINDER_GLUSTER_MOUNTS={{ ip_list('gluster_nodes') }}
 
 # A single or comma seprated list of NFS exports to mount, eg: ip-
 # address:/export-name
-CONFIG_CINDER_NFS_MOUNTS=
-
+CONFIG_CINDER_NFS_MOUNTS={{ ip_list('nfs_nodes') }}
 
 # The IP address of the server on which to install the Nova API
 # service
 CONFIG_NOVA_API_HOST={{ ip_list('openstack_controller') }}
-
 
 # The IP address of the server on which to install the Nova Cert
 # service
@@ -174,11 +172,11 @@ CONFIG_NOVA_SCHED_HOST={{ ip_list('openstack_controller') }}
 
 # The overcommitment ratio for virtual to physical CPUs. Set to 1.0
 # to disable CPU overcommitment
-CONFIG_NOVA_SCHED_CPU_ALLOC_RATIO=16.0
+CONFIG_NOVA_SCHED_CPU_ALLOC_RATIO={{ cpu_alloc_ratio }}
 
 # The overcommitment ratio for virtual to physical RAM. Set to 1.0 to
 # disable RAM overcommitment
-CONFIG_NOVA_SCHED_RAM_ALLOC_RATIO=1.5
+CONFIG_NOVA_SCHED_RAM_ALLOC_RATIO={{ ram_alloc_ratio }}
 
 # Private interface for Flat DHCP on the Nova compute servers
 CONFIG_NOVA_COMPUTE_PRIVIF=lo
