@@ -1,5 +1,43 @@
+#--------------------
+# Gluster Packages 
+#  and daemons
+#--------------------     
 
-#---------------------
+- name: ensure we have GlusterFS repos available
+  copy: src=glusterfs-epel.repo  dest=/etc/yum.repos.d/glusterfs.repo owner=root group=root mode=0644
+
+- name: install gluster packages
+  yum: name=${item} state=installed
+  environment: proxy_env
+  with_items:
+     - glusterfs-server
+     - glusterfs-fuse
+      
+- name: start gluster service
+  action: service name=glusterd state=started
+  
+#---------------------------------
+# Brick creation
+#
+# conditional on variable
+#  make_gluster_loopback_brick == True
+#
+#----------------------------------
+
+- name: setup directory for loopback gluster devices
+  file: path=/var/lib/gluster-loop state=directory
+  when: make_gluster_loopback_brick
+
+- name: create a loopback file
+  shell: dd if=/dev/zero of=/var/lib/gluster-loop/block bs=1G count={{ gluster_brick_size }}  
+            creates=/var/lib/gluster-loop/block
+  when: make_gluster_loopback_brick
+       
+- name: create a loop device
+  shell: losetup $( losetup -f ) /var/lib/gluster-loop/block
+  when: make_gluster_loopback_brick
+          
+#----------------------
 # Brick mounting   
 #---------------------
 
@@ -7,7 +45,7 @@
   yum: name=xfsprogs state=installed
 
 - name: setup brick FS for gluster (will fail if already formatted)
-  shell: mkfs.xfs -f -i size=512 ${gluster_vol_device}
+  shell: mkfs.xfs -f -i size=512 /dev/${gluster_vol_device}
   ignore_errors: yes
   tags:
     - brick
@@ -18,26 +56,10 @@
     - brick
      
 - name: create mount entry for the new brick
-  mount: name=${gluster_local_storage_path} src=${gluster_vol_device} fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name=${gluster_local_storage_path} src=/dev/${gluster_vol_device} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
              
-#--------------------
-# Gluster Packages
-#--------------------     
-
-- name: ensure we have GlusterFS repos available
-  copy: src=glusterfs-epel.repo  dest=/etc/yum.repos.d/glusterfs.repo owner=root group=root mode=0644
-
-- name: install gluster packages
-  yum: name=${item} state=installed
-  with_items:
-     - glusterfs-server
-     - glusterfs-fuse
-      
-- name: start gluster service
-  action: service name=glusterd state=started
-
 #--------------------
 # SELiux & firewall
 #--------------------
@@ -73,78 +95,4 @@
 #  action: service name=iptables state=restarted
   
         
-    
-#
-# Configure gluster volume on fedora
-#
-
-# debugging ...
-
-# List hosts
-#- name: list out all the hosts in the group
-#  action: debug  msg="gluster_nodes = ${groups.gluster_nodes}"
-#  tags: gluster_volume
-  
-# Test the substitution
-#- name: test the substitution
-#  action: debug  msg="IP address = ${hostvars.{$item}.ansible_eth0.ipv4.address}"
-#  with_items: ${groups.gluster_nodes}  
-#  tags: gluster_volume
-
-#
-# Configure gluster peers
-#
-  
-- name: configure other gluster peers
-  action: shell gluster peer probe ${hostvars.${item}.ansible_eth0.ipv4.address}
-  with_items: ${groups.gluster_nodes}
-  tags: gluster_volume      
-         
-#
-# Build a volume
-#       
-  
-# Create a volume locally for now ...
-- name: set up a gluster volume with one brick
-  shell: gluster volume create ${gluster_volume_name} transport tcp ${ansible_eth0.ipv4.address}:${gluster_local_storage_path}
-  tags: gluster_volume
-  ignore_errors: yes
-    
-# Add other bricks from peers to the volume
-- name: add bricks to gluster volume
-  shell: gluster volume add-brick ${gluster_volume_name} ${gluster_vol_options} ${hostvars.{$item}.ansible_eth0.ipv4.address}:${gluster_local_storage_path}
-  with_items: ${groups.gluster_nodes}  
-  tags: gluster_volume
-  ignore_errors: yes
-        
-# Start it.
-- name: start up the gluster volume
-  shell: gluster volume start ${gluster_volume_name}
-  tags: gluster_volume
-  ignore_errors: yes
-          
-# query it  
-- name: set up a gluster volume
-  shell: gluster volume info
-  tags: gluster_volume
-  
-# try to mount it locally for kicks & grins ...
-
-- name: setup a mount point for the gluster fs volume
-  file: path=/mnt/${gluster_volume_name} state=directory owner=root group=root mode=0755
-  tags: gluster_volume
-  ignore_errors: yes
-  
-- name: mount the gluster volume as another filesystem
-  shell: mount -t glusterfs ${ansible_eth0.ipv4.address}:${gluster_volume_name} /mnt/${gluster_volume_name}
-  tags: gluster_volume
-  
-# Test it out ... 
-- name: create gluster test script
-  action: template src="gluster_test.sh.j2" dest="/tmp/gluster_test.sh"  owner="root" group="root" mode="0755"
-  tags: gluster_volume
-  
-- name: run test 
-  shell: /tmp/gluster_test.sh
-  tags: gluster_volume
-    
+      

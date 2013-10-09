@@ -14,7 +14,37 @@
        - openstack-keystone
        - openstack-glance-api
        - openstack-glance-registry
+       - openstack-cinder-api      
        - openstack-nova-api
+       - openstack-nova-cert
+       - openstack-nova-compute
+       - openstack-nova-conductor
+       - openstack-nova-console
+       - openstack-nova-consoleauth
+       - openstack-nova-metadata-api
+       - openstack-nova-novncproxy
+       - openstack-nova-scheduler
+       - openstack-nova-xvpvncproxy
+       - neutron-dhcp-agent
+       - neutron-l3-agent
+       - neutron-metadata-agent
+       - neutron-openvswitch-agent
+       - neutron-ovs-cleanup
+       - neutron-server
+       - openstack-swift-account
+       - openstack-swift-account-auditor
+       - openstack-swift-account-reaper
+       - openstack-swift-account-replicator
+       - openstack-swift-container
+       - openstack-swift-container-auditor
+       - openstack-swift-container-replicator
+       - openstack-swift-container-updater
+       - openstack-swift-object
+       - openstack-swift-object-auditor
+       - openstack-swift-object-expirer
+       - openstack-swift-object-replicator
+       - openstack-swift-object-updater
+       - openstack-swift-proxy       
        - httpd
 
    - name: Remove all OpenStack packages
@@ -140,9 +170,13 @@
      file: path={{ item }} state=absent
      ignore_errors: yes
      with_items:
+      - /var/lib/keystone
       - /var/lib/cinder
       - /var/lib/glance
       - /var/lib/nova
+      - /var/lib/neutron
+      - /var/lib/swift
+      - /var/lib/ceilometer
              
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
@@ -190,4 +224,5 @@
      ignore_errors: yes
      with_items:
       - /etc/profile.d/http_proxy.sh
+      - /var/lib/gluster-loop
 

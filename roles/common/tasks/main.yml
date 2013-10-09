@@ -2,6 +2,9 @@
 
 # The common tasks
 
+- name: ec2 facts
+  ec2_facts:
+    
 - name: avoid an update to cloud-init that might break access
   lineinfile: dest=/etc/yum.conf
               regexp="^exclude=cloud-init" 

@@ -3,7 +3,10 @@
 openstack_release: havana
 
 # Cinder vars
-cinder_backend: lvm
+
+# lvm or gluster or nfs
+cinder_backend: gluster
+
 cinder_volume_size: 20G
 
 # Nova vars
@@ -14,9 +17,6 @@ ram_alloc_ratio: 1.5
 iface: eth0
 
 # Gluster vars
-gluster_brick_size: 100
-
-gluster_vol_device: /dev/xvdg
 gluster_local_storage_path: /export/brick1
 gluster_volume_name: gv0
 #gluster_vol_options: replica 2

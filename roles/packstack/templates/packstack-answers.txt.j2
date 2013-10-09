@@ -14,6 +14,18 @@
   
 %}{%- endmacro %}
 
+{% macro gluster_mnt_list(groupname, mntpnt) -%}{% 
+
+  for host in groups[groupname] 
+
+    %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}:/{{ gluster_volume_name }}{% 
+    
+    if not loop.last %}, {% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+
 # Path to a Public key to install on servers. If a usable key has not
 # been installed on the remote servers the user will be prompted for a
 # password and this key will be installed so the password will not be
@@ -134,7 +146,7 @@ CONFIG_CINDER_VOLUMES_SIZE={{ cinder_volume_size }}
 
 # A single or comma separated list of gluster volume shares to mount,
 # eg: ip-address:/vol-name
-CONFIG_CINDER_GLUSTER_MOUNTS={{ ip_list('gluster_nodes') }}
+CONFIG_CINDER_GLUSTER_MOUNTS={{ gluster_mnt_list('gluster_nodes', mntpnt) }}
 
 # A single or comma seprated list of NFS exports to mount, eg: ip-
 # address:/export-name

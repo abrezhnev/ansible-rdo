@@ -1,0 +1,7 @@
+---
+
+#Neutron/Quantum vars
+iface: eth0
+
+# Gluster vars specifically for hosts on EC2
+gluster_vol_device: xvdg

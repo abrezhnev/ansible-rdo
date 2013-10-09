@@ -1,0 +1,20 @@
+---
+
+# Special environment vars
+
+proxy_env:
+  http_proxy:  http://iliadsocks.rc.fas.harvard.edu:8888
+  https_proxy: http://iliadsocks.rc.fas.harvard.edu:8888
+  no_proxy:    "localhost,127.0.0.1,localaddress,.localdomain.com,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
+      
+#Neutron/Quantum vars for FAS hosts
+
+iface: eth0
+
+# Gluster vars for FASRC hosts
+make_gluster_loopback_brick: true
+gluster_brick_size: 100
+gluster_vol_device: loop1
+
+
+

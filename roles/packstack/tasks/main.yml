@@ -3,6 +3,7 @@
 
 - name: install needed packages for packstack to operate
   yum: name={{ item }} state=present
+  environment: proxy_env
   with_items:
    - openstack-packstack 
    - mod_ssl
@@ -27,4 +28,4 @@
 
 - name: Now run packstack ...
   shell: packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
-  
+  environment: proxy_env  
