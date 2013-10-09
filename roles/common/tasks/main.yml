@@ -11,6 +11,10 @@
               state=present 
               create=yes
               line="exclude=cloud-init kernel"  
+                  
+- name: Install packages to allow for accelerated mode
+  yum: name=python-keyczar  state=installed
+  environment: proxy_env  
                        
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
@@ -54,4 +58,8 @@
   yum:  name=openstack-utils state=installed
   environment: proxy_env
 
+- name: setup proxy environment for all users
+  shell: env | grep _proxy | grep -v SUDO | sed 's/^/export /' > /etc/profile.d/proxy-env.sh
+  environment: proxy_env
+    
 - include: openvswitch-upgrade.yml

@@ -9,11 +9,16 @@ proxy_env:
       
 #Neutron/Quantum vars for FAS hosts
 
+compute_private_if: eth0              # Interface that compute hosts will use for VM traffic
+network_private_if: eth0              # Interface that network hosts will use for VM traffic
+
+public_if: eth0
+
 iface: eth0
 
 # Gluster vars for FASRC hosts
 make_gluster_loopback_brick: true
-gluster_brick_size: 1
+gluster_brick_size: 500
 gluster_vol_device: loop1
 
 

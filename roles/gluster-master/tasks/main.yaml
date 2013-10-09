@@ -55,4 +55,5 @@
 - name: run test 
   shell: /tmp/gluster_test.sh
   tags: gluster_volume
+  ignore_errors: yes
     

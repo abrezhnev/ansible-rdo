@@ -18,9 +18,9 @@
 
   for host in groups[groupname] 
 
-    %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}:/{{ gluster_volume_name }}{% 
+    %}'{{ hostvars[host]['ansible_'+iface].ipv4.address }}:/{{ gluster_volume_name }}'{% 
     
-    if not loop.last %}, {% endif %}{%
+    if not loop.last %},{% endif %}{%
 
   endfor 
   
@@ -191,7 +191,7 @@ CONFIG_NOVA_SCHED_CPU_ALLOC_RATIO={{ cpu_alloc_ratio }}
 CONFIG_NOVA_SCHED_RAM_ALLOC_RATIO={{ ram_alloc_ratio }}
 
 # Private interface for Flat DHCP on the Nova compute servers
-CONFIG_NOVA_COMPUTE_PRIVIF=lo
+CONFIG_NOVA_COMPUTE_PRIVIF={{ compute_private_if }}
 
 # The IP address of the server on which to install the Nova Network
 # service
@@ -201,10 +201,10 @@ CONFIG_NOVA_NETWORK_HOST={{ ip_list('openstack_controller') }}
 CONFIG_NOVA_NETWORK_MANAGER=nova.network.manager.FlatDHCPManager
 
 # Public interface on the Nova network server
-CONFIG_NOVA_NETWORK_PUBIF=eth0
+CONFIG_NOVA_NETWORK_PUBIF={{ public_if }}
 
 # Private interface for network manager on the Nova network server
-CONFIG_NOVA_NETWORK_PRIVIF=lo
+CONFIG_NOVA_NETWORK_PRIVIF={{ network_private_if }}
 
 # IP Range for network manager
 CONFIG_NOVA_NETWORK_FIXEDRANGE=192.168.32.0/22
@@ -227,8 +227,6 @@ CONFIG_NOVA_NETWORK_NUMBER=1
 
 # Number of addresses in each private subnet
 CONFIG_NOVA_NETWORK_SIZE=255
-
-
 
 # The IP addresses of the server on which to install the Neutron
 # server

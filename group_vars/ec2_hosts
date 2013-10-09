@@ -1,6 +1,9 @@
 ---
 
 #Neutron/Quantum vars
+compute_private_if: eth0              # Interface that compute hosts will use for VM traffic
+network_private_if: eth0              # Interface that network hosts will use for VM traffic
+
 iface: eth0
 
 # Gluster vars specifically for hosts on EC2

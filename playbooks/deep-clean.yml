@@ -6,8 +6,12 @@
 
 - hosts: all
   tasks:
-  
-   - name: Shutdown all services     
+ 
+   #----------------
+   # OpenStack
+   #----------------
+ 
+   - name: Shutdown all OpenStack services     
      service: name={{ item }} state=stopped
      ignore_errors: yes
      with_items:
@@ -46,7 +50,6 @@
        - openstack-swift-object-updater
        - openstack-swift-proxy       
        - httpd
-       - gluster 
 
    - name: Remove all OpenStack packages
      yum: name={{ item }} state=removed
@@ -149,13 +152,6 @@
        - rubygem-openstack-quantum-client-doc 
        - rubygem-openstack-quantum-client 
 
-   - name: Remove all gluster packages
-     yum: name={{ item }} state=removed
-     ignore_errors: yes
-     with_items:
-      - glusterfs-server
-      - glusterfs-fuse
-      
    - name: Remove all RDO release pkg
      yum: name=rdo-release state=removed
      ignore_errors: yes
@@ -213,7 +209,11 @@
       - /tmp/packstack-answers.txt  
       - /tmp/packstack-passwords.txt       
       - /root/keystonerc_admin      
-      
+
+   #----------------
+   # MySQL
+   #----------------
+         
    - name: Remove MySQL
      yum: name=mysql-server state=removed
      ignore_errors: yes       
@@ -226,11 +226,55 @@
       - /etc/mysql
       - /etc/my.cnf
       - /root/.my.cnf
-
+            
    - name: Remove remaining vestiges of other settings
      file: path={{ item }} state=absent
      ignore_errors: yes
      with_items:
       - /etc/profile.d/http_proxy.sh
-      - /var/lib/gluster-loop
+      - /etc/profile.d/proxy-env.sh      
 
+    #------------------
+    # GLUSTER
+    #------------------
+
+    
+    - name: Shutdown gluster volume
+      shell: gluster volume stop gv0 && gluster volume delete gv0
+      ignore_errors: yes
+#   - name: unmount all glusterfs mounts
+#     mount: name=/mnt/gv0 state=unmounted fstype=gluster 
+#     with_items:
+#      - /gluster-test-mnt
+#       - /mnt/gv0
+       
+   - name: Shutdown all gluster services
+     service: name={{ item }} state=stopped
+     ignore_errors: yes
+     with_items:
+       - glusterd
+       - glusterfsd
+
+#   - name: unmount all xfs mounts used by gluster
+#     mount: name={{ item }} state=unmounted fstype=xfs
+#     with_items:
+#       - /export/brick1
+                        
+#   - name: remove loopback devices
+#     shell: losetup -d /dev/loop1
+     
+   - name: Remove all gluster packages
+     yum: name={{ item }} state=removed
+     ignore_errors: yes
+     with_items:
+      - glusterfs-server
+      - glusterfs-fuse
+
+   - name: Remove all gluster packages
+     yum: name={{ item }} state=removed
+     ignore_errors: yes
+     with_items:
+      - glusterfs-server
+      - glusterfs-fuse
+            
+            
