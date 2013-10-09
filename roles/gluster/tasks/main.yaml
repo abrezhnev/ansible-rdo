@@ -30,13 +30,21 @@
 
 - name: create a loopback file
   shell: dd if=/dev/zero of=/var/lib/gluster-loop/block bs=1G count={{ gluster_brick_size }}  
-            creates=/var/lib/gluster-loop/block
+         creates=/var/lib/gluster-loop/block
   when: make_gluster_loopback_brick
-       
+
+# The following shold really be a loopback module.
+
+- name: deattach associated loop device
+  shell: losetup -d /dev/{{ gluster_vol_device }}
+  when: make_gluster_loopback_brick
+  ignore_errors: yes
+         
 - name: create a loop device
-  shell: losetup $( losetup -f ) /var/lib/gluster-loop/block
+  shell: losetup /dev/{{ gluster_vol_device }} /var/lib/gluster-loop/block
   when: make_gluster_loopback_brick
-          
+  ignore_errors: yes
+            
 #----------------------
 # Brick mounting   
 #---------------------

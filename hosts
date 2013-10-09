@@ -5,7 +5,7 @@ osc03.rc.fas.harvard.edu
 osc04.rc.fas.harvard.edu
 
 [ec2_hosts]
-54.221.222.223
+#54.221.222.223
 
 [gluster_loopback]
 osc01.rc.fas.harvard.edu

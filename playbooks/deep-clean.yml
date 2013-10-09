@@ -46,6 +46,7 @@
        - openstack-swift-object-updater
        - openstack-swift-proxy       
        - httpd
+       - gluster 
 
    - name: Remove all OpenStack packages
      yum: name={{ item }} state=removed
@@ -148,6 +149,13 @@
        - rubygem-openstack-quantum-client-doc 
        - rubygem-openstack-quantum-client 
 
+   - name: Remove all gluster packages
+     yum: name={{ item }} state=removed
+     ignore_errors: yes
+     with_items:
+      - glusterfs-server
+      - glusterfs-fuse
+      
    - name: Remove all RDO release pkg
      yum: name=rdo-release state=removed
      ignore_errors: yes

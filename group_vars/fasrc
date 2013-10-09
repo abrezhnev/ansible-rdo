@@ -13,7 +13,7 @@ iface: eth0
 
 # Gluster vars for FASRC hosts
 make_gluster_loopback_brick: true
-gluster_brick_size: 100
+gluster_brick_size: 1
 gluster_vol_device: loop1
 
 

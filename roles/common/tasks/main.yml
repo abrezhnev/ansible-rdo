@@ -26,6 +26,7 @@
 
 - name: Install required packages
   yum: name={{ item }} state=installed
+  environment: proxy_env  
   with_items:
    - ntp
    - sudo
@@ -45,7 +46,12 @@
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
  
+- name: Test proxy environment
+  shell: rm -f /tmp/proxy-env.txt && env | grep proxy > /tmp/proxy-env.txt
+  environment: proxy_env 
+   
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
+  environment: proxy_env
 
 - include: openvswitch-upgrade.yml
