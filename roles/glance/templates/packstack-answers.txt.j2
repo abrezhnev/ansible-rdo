@@ -1,0 +1,409 @@
+[general]
+
+{# Macro to create a CSV list of IP addresses #}
+
+{% macro ip_list(groupname) -%}{% 
+
+  for host in groups[groupname] 
+
+    %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}{% 
+    
+    if not loop.last %}, {% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+
+{% macro gluster_mnt_list(groupname, mntpnt) -%}{% 
+
+  for host in groups[groupname] 
+
+    %}'{{ hostvars[host]['ansible_'+iface].ipv4.address }}:/{{ gluster_volume_name }}'{% 
+    
+    if not loop.last %},{% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+
+# Path to a Public key to install on servers. If a usable key has not
+# been installed on the remote servers the user will be prompted for a
+# password and this key will be installed so the password will not be
+# required again
+CONFIG_SSH_KEY=/root/.ssh/id_rsa.kdump.pub
+
+# Set to 'y' if you would like Packstack to install MySQL
+CONFIG_MYSQL_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack Image
+# Service (Glance)
+CONFIG_GLANCE_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack Block
+# Storage (Cinder)
+CONFIG_CINDER_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack Compute
+# (Nova)
+CONFIG_NOVA_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack
+# Networking (Neutron)
+CONFIG_NEUTRON_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack
+# Dashboard (Horizon)
+CONFIG_HORIZON_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack Object
+# Storage (Swift)
+CONFIG_SWIFT_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install OpenStack
+# Metering (Ceilometer)
+CONFIG_CEILOMETER_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install Heat
+CONFIG_HEAT_INSTALL=y
+
+# Set to 'y' if you would like Packstack to install the OpenStack
+# Client packages. An admin "rc" file will also be installed
+CONFIG_CLIENT_INSTALL=y
+
+# Comma separated list of NTP servers. Leave plain if Packstack
+# should not install ntpd on instances.
+CONFIG_NTP_SERVERS=
+
+# Set to 'y' if you would like Packstack to install Nagios to monitor
+# openstack hosts
+CONFIG_NAGIOS_INSTALL=y
+
+# Comma separated list of servers to be excluded from installation in
+# case you are running Packstack the second time with the same answer
+# file and don't want Packstack to touch these servers. Leave plain if
+# you don't need to exclude any server.
+EXCLUDE_SERVERS=
+
+# The IP address of the server on which to install MySQL
+CONFIG_MYSQL_HOST={{ ip_list('openstack_controller') }}
+
+# Username for the MySQL admin user
+CONFIG_MYSQL_USER=root
+
+# Password for the MySQL admin user
+#CONFIG_MYSQL_PW=f462b93ce86d4751
+
+# The IP address of the server on which to install the QPID service
+CONFIG_QPID_HOST={{ ip_list('openstack_controller') }}
+
+# The IP address of the server on which to install Keystone
+CONFIG_KEYSTONE_HOST={{ ip_list('openstack_keystone') }}
+
+# The password to use for the Keystone to access DB
+#CONFIG_KEYSTONE_DB_PW=912eb0cc626b4348
+
+# The token to use for the Keystone service api
+#CONFIG_KEYSTONE_ADMIN_TOKEN=7480a3d70733410cb2975833a24a92ca
+
+# The password to use for the Keystone admin user
+#CONFIG_KEYSTONE_ADMIN_PW=56fed0cfc30b42b1
+
+# The password to use for the Keystone demo user
+#CONFIG_KEYSTONE_DEMO_PW=b841c905e2e94d21
+
+# Kestone token format. Use either UUID or PKI
+CONFIG_KEYSTONE_TOKEN_FORMAT=PKI
+
+# The IP address of the server on which to install Glance
+CONFIG_GLANCE_HOST={{ ip_list('openstack_glance') }}
+
+# The password to use for the Glance to access DB
+#CONFIG_GLANCE_DB_PW=44d7f83547d54b41
+
+# The password to use for the Glance to authenticate with Keystone
+#CONFIG_GLANCE_KS_PW=4994deed2672407e
+
+# The IP address of the server on which to install Cinder
+CONFIG_CINDER_HOST={{ ip_list('openstack_cinder') }}
+
+# The password to use for the Cinder to access DB
+#CONFIG_CINDER_DB_PW=29e432f76d54438c
+
+# The password to use for the Cinder to authenticate with Keystone
+#CONFIG_CINDER_KS_PW=cd12e6350e114a6a
+
+# The Cinder backend to use, valid options are: lvm, gluster, nfs
+CONFIG_CINDER_BACKEND={{ cinder_backend }}
+
+# Create Cinder's volumes group. This should only be done for testing
+# on a proof-of-concept installation of Cinder.  This will create a
+# file-backed volume group and is not suitable for production usage.
+CONFIG_CINDER_VOLUMES_CREATE=y
+
+# Cinder's volumes group size. Note that actual volume size will be
+# extended with 3% more space for VG metadata.
+CONFIG_CINDER_VOLUMES_SIZE={{ cinder_volume_size }}
+
+# A single or comma separated list of gluster volume shares to mount,
+# eg: ip-address:/vol-name
+CONFIG_CINDER_GLUSTER_MOUNTS={{ gluster_mnt_list('gluster_nodes', mntpnt) }}
+
+# A single or comma seprated list of NFS exports to mount, eg: ip-
+# address:/export-name
+CONFIG_CINDER_NFS_MOUNTS={{ ip_list('nfs_nodes') }}
+
+# The IP address of the server on which to install the Nova API
+# service
+CONFIG_NOVA_API_HOST={{ ip_list('openstack_controller') }}
+
+# The IP address of the server on which to install the Nova Cert
+# service
+CONFIG_NOVA_CERT_HOST={{ ip_list('openstack_controller') }}
+
+# The IP address of the server on which to install the Nova VNC proxy
+CONFIG_NOVA_VNCPROXY_HOST={{ ip_list('openstack_controller') }}
+
+# A comma separated list of IP addresses on which to install the Nova
+# Compute services
+
+CONFIG_NOVA_COMPUTE_HOSTS={{ ip_list('openstack_compute') }}
+
+# The IP address of the server on which to install the Nova Conductor
+# service
+CONFIG_NOVA_CONDUCTOR_HOST={{ ip_list('openstack_controller') }}
+
+# The password to use for the Nova to access DB
+#CONFIG_NOVA_DB_PW=b7fc9e4eb5d644e8
+
+# The password to use for the Nova to authenticate with Keystone
+#CONFIG_NOVA_KS_PW=9ba22d90d512424b
+
+# The IP address of the server on which to install the Nova Scheduler
+# service
+CONFIG_NOVA_SCHED_HOST={{ ip_list('openstack_controller') }}
+
+# The overcommitment ratio for virtual to physical CPUs. Set to 1.0
+# to disable CPU overcommitment
+CONFIG_NOVA_SCHED_CPU_ALLOC_RATIO={{ cpu_alloc_ratio }}
+
+# The overcommitment ratio for virtual to physical RAM. Set to 1.0 to
+# disable RAM overcommitment
+CONFIG_NOVA_SCHED_RAM_ALLOC_RATIO={{ ram_alloc_ratio }}
+
+# Private interface for Flat DHCP on the Nova compute servers
+CONFIG_NOVA_COMPUTE_PRIVIF={{ compute_private_if }}
+
+# The IP address of the server on which to install the Nova Network
+# service
+CONFIG_NOVA_NETWORK_HOST={{ ip_list('openstack_controller') }}
+
+# Nova network manager
+CONFIG_NOVA_NETWORK_MANAGER=nova.network.manager.FlatDHCPManager
+
+# Public interface on the Nova network server
+CONFIG_NOVA_NETWORK_PUBIF={{ public_if }}
+
+# Private interface for network manager on the Nova network server
+CONFIG_NOVA_NETWORK_PRIVIF={{ network_private_if }}
+
+# IP Range for network manager
+CONFIG_NOVA_NETWORK_FIXEDRANGE=192.168.32.0/22
+
+# IP Range for Floating IP's
+CONFIG_NOVA_NETWORK_FLOATRANGE=10.3.4.0/22
+
+# Name of the default floating pool to which the specified floating
+# ranges are added to
+CONFIG_NOVA_NETWORK_DEFAULTFLOATINGPOOL=nova
+
+# Automatically assign a floating IP to new instances
+CONFIG_NOVA_NETWORK_AUTOASSIGNFLOATINGIP=n
+
+# First VLAN for private networks
+CONFIG_NOVA_NETWORK_VLAN_START=100
+
+# Number of networks to support
+CONFIG_NOVA_NETWORK_NUMBER=1
+
+# Number of addresses in each private subnet
+CONFIG_NOVA_NETWORK_SIZE=255
+
+# The IP addresses of the server on which to install the Neutron
+# server
+CONFIG_NEUTRON_SERVER_HOST={{ ip_list('openstack_neutron') }}
+
+# The password to use for Neutron to authenticate with Keystone
+#CONFIG_NEUTRON_KS_PW=1044837863f4461b
+
+# The password to use for Neutron to access DB
+#CONFIG_NEUTRON_DB_PW=36c1be4f8f124499
+
+# A comma separated list of IP addresses on which to install Neutron
+# L3 agent
+CONFIG_NEUTRON_L3_HOSTS={{ ip_list('openstack_neutron_l3') }}
+
+# The name of the bridge that the Neutron L3 agent will use for
+# external traffic, or 'provider' if using provider networks
+CONFIG_NEUTRON_L3_EXT_BRIDGE=br-ex
+
+# A comma separated list of IP addresses on which to install Neutron
+# DHCP agent
+CONFIG_NEUTRON_DHCP_HOSTS={{ ip_list('openstack_neutron_dhcp') }}
+
+# The name of the L2 plugin to be used with Neutron
+CONFIG_NEUTRON_L2_PLUGIN=openvswitch
+
+# A comma separated list of IP addresses on which to install Neutron
+# metadata agent
+CONFIG_NEUTRON_METADATA_HOSTS={{ ip_list('openstack_neutron') }}
+
+# A comma separated list of IP addresses on which to install Neutron
+# metadata agent
+#CONFIG_NEUTRON_METADATA_PW=989a3f58f4b14496
+
+# The type of network to allocate for tenant networks
+CONFIG_NEUTRON_LB_TENANT_NETWORK_TYPE=local
+
+# A comma separated list of VLAN ranges for the Neutron linuxbridge
+# plugin
+CONFIG_NEUTRON_LB_VLAN_RANGES=
+
+# A comma separated list of interface mappings for the Neutron
+# linuxbridge plugin
+CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
+
+# Type of network to allocate for tenant networks
+CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=local
+
+# A comma separated list of VLAN ranges for the Neutron openvswitch
+# plugin
+CONFIG_NEUTRON_OVS_VLAN_RANGES=
+
+# A comma separated list of bridge mappings for the Neutron
+# openvswitch plugin
+CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=
+
+# A comma separated list of colon-separated OVS bridge:interface
+# pairs. The interface will be added to the associated bridge.
+CONFIG_NEUTRON_OVS_BRIDGE_IFACES=
+
+# A comma separated list of tunnel ranges for the Neutron openvswitch
+# plugin
+CONFIG_NEUTRON_OVS_TUNNEL_RANGES=
+
+# Override the IP used for GRE tunnels on this hypervisor to the IP
+# found on the specified interface (defaults to the HOST IP)
+CONFIG_NEUTRON_OVS_TUNNEL_IF=
+
+# The IP address of the server on which to install the OpenStack
+# client packages. An admin "rc" file will also be installed
+CONFIG_OSCLIENT_HOST={{ ip_list('openstack_controller') }}
+
+# The IP address of the server on which to install Horizon
+CONFIG_HORIZON_HOST={{ ip_list('openstack_horizon') }}
+
+# To set up Horizon communication over https set this to "y"
+CONFIG_HORIZON_SSL=y
+
+# PEM encoded certificate to be used for ssl on the https server,
+# leave blank if one should be generated, this certificate should not
+# require a passphrase
+CONFIG_SSL_CERT=
+
+# Keyfile corresponding to the certificate if one was entered
+CONFIG_SSL_KEY=
+
+# The IP address on which to install the Swift proxy service
+# (currently only single proxy is supported)
+CONFIG_SWIFT_PROXY_HOSTS={{ ip_list('swift_proxy_nodes') }}
+
+# The password to use for the Swift to authenticate with Keystone
+#CONFIG_SWIFT_KS_PW=c2c3ab365cca4a6b
+
+# A comma separated list of IP addresses on which to install the
+# Swift Storage services, each entry should take the format
+# <ipaddress>[/dev], for example 127.0.0.1/vdb will install /dev/vdb
+# on 127.0.0.1 as a swift storage device(packstack does not create the
+# filesystem, you must do this first), if /dev is omitted Packstack
+# will create a loopback device for a test setup
+CONFIG_SWIFT_STORAGE_HOSTS={{ ip_list('swift_storage_nodes') }}
+
+
+# Number of swift storage zones, this number MUST be no bigger than
+# the number of storage devices configured
+CONFIG_SWIFT_STORAGE_ZONES=1
+
+# Number of swift storage replicas, this number MUST be no bigger
+# than the number of storage zones configured
+CONFIG_SWIFT_STORAGE_REPLICAS=1
+
+# FileSystem type for storage nodes
+CONFIG_SWIFT_STORAGE_FSTYPE=ext4
+
+# Whether to provision for demo usage and testing
+CONFIG_PROVISION_DEMO=n
+
+# The CIDR network address for the floating IP subnet
+CONFIG_PROVISION_DEMO_FLOATRANGE=172.24.4.224/28
+
+# Whether to configure tempest for testing
+CONFIG_PROVISION_TEMPEST=y
+
+# The uri of the tempest git repository to use
+CONFIG_PROVISION_TEMPEST_REPO_URI=https://github.com/redhat-openstack/tempest.git
+
+# The revision of the tempest git repository to use
+CONFIG_PROVISION_TEMPEST_REPO_REVISION=master
+
+# Whether to configure the ovs external bridge in an all-in-one
+# deployment
+CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE=n
+
+# The IP address of the server on which to install Heat service
+CONFIG_HEAT_HOST={{ ip_list('openstack_heat') }}
+
+# The password used by Heat user to authenticate against MySQL
+#CONFIG_HEAT_DB_PW=2cf0e8b5a31c4380
+
+# The password to use for the Heat to authenticate with Keystone
+#CONFIG_HEAT_KS_PW=f15eefd1a6384793
+
+# Set to 'y' if you would like Packstack to install Heat CloudWatch
+# API
+CONFIG_HEAT_CLOUDWATCH_INSTALL=n
+
+# Set to 'y' if you would like Packstack to install Heat
+# CloudFormation API
+CONFIG_HEAT_CFN_INSTALL=n
+
+# The IP address of the server on which to install Heat CloudWatch
+# API service
+CONFIG_HEAT_CLOUDWATCH_HOST={{ ip_list('openstack_heat') }}
+
+# The IP address of the server on which to install Heat
+# CloudFormation API service
+CONFIG_HEAT_CFN_HOST={{ ip_list('openstack_heat') }}
+
+# The IP address of the server on which to install Ceilometer
+CONFIG_CEILOMETER_HOST={{ ip_list('openstack_heat') }}
+
+# Secret key for signing metering messages.
+#CONFIG_CEILOMETER_SECRET=594f5648c9fe4ef5
+
+# The password to use for Ceilometer to authenticate with Keystone
+#CONFIG_CEILOMETER_KS_PW=acfbcb2b726541b1
+
+# To subscribe each server to EPEL enter "y"
+CONFIG_USE_EPEL=n
+
+# A comma separated list of URLs to any additional yum repositories
+# to install
+CONFIG_REPO=
+
+# The IP address of the server on which to install the Nagios server
+CONFIG_NAGIOS_HOST={{ ip_list('openstack_heat') }}
+
+# The password of the nagiosadmin user on the Nagios server
+#CONFIG_NAGIOS_PW=c1c6825150344bee
+
+

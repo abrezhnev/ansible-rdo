@@ -1,0 +1,34 @@
+---
+#
+#
+# Reconfigure glance beyond what packstack does ...
+#
+#
+
+- name: change glance storage backend to swift
+  ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=default_store value=swift
+
+- name: read in keystone IP
+  shell: grep ^CONFIG_KEYSTONE_HOST /tmp/packstack-answers.txt | awk -F= '{ print $2 }'
+  register: result
+     
+
+  
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_auth_address value="{{ result.stdout }}:5000/v2.0/"
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_user value=glance
+
+- name: read in glance user password
+  shell: grep ^CONFIG_GLANCE_KS_PW /tmp/packstack-answers.txt | awk -F= '{ print $2 }'
+  register: result
+  
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_key value={{ result.stdout }}
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_container value=glance
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_create_container_on_put value=True
+
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_large_object_size value=5120
+- ini_file: dest=/etc/glance/glance-api.conf section=DEFAULT option=swift_store_large_object_chunk_size value=200
+
+- name: restart glance to pick up these changes
+  service: name={{ item }} state=restarted
+  with_items: [openstack-glance-api]
+

@@ -1,25 +1,29 @@
 ---
 # The main openstack site deployment playbook
-   
+
 - hosts: all
   roles:
-#   - huit-accessible
+   - huit-accessible
    - common
 
 - hosts: gluster_nodes
   roles: [gluster]
-     
+
 - hosts: gluster_master
   roles: [gluster-master]
-    
+
 - hosts: openstack_controller
   roles:
    - packstack
-   - post-config
 #   - controller
 
 - hosts: openstack_compute
   roles:
-#   - compute
- 
+   - compute
 
+- hosts: openstack_glance
+  roles: [glance]
+
+- hosts: openstack_controller
+  roles:
+   - post-config
