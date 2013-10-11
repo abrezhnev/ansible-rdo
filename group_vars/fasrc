@@ -5,7 +5,7 @@
 proxy_env:
   http_proxy:  http://iliadsocks.rc.fas.harvard.edu:8888
   https_proxy: http://iliadsocks.rc.fas.harvard.edu:8888
-  no_proxy:    "localhost,127.0.0.1,localaddress,.localdomain.com,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
+  no_proxy:    127.0.0.1,localhost,rc.fas.harvard.edu,10.242.108.8,10.242.108.9,10.242.108.10,10.242.108.11
       
 #Neutron/Quantum vars for FAS hosts
 
