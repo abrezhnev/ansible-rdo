@@ -48,8 +48,13 @@
        - openstack-swift-object-expirer
        - openstack-swift-object-replicator
        - openstack-swift-object-updater
-       - openstack-swift-proxy       
+       - openstack-swift-proxy    
+       - openvswitch  
+       - mongod 
        - httpd
+       - qpidd
+       - memcached
+       - nagios
 
    - name: Remove all OpenStack packages
      yum: name={{ item }} state=removed
@@ -149,13 +154,25 @@
        - python-swiftclient-doc 
        - python-swiftclient 
        - python-troveclient 
+       - python-webob
+       - python-webob1.2
+       - python-webob1.0
+       - python-pymongo
+       - python-qpid
+       - python-memcached
        - rubygem-openstack-quantum-client-doc 
        - rubygem-openstack-quantum-client 
+       - openvswitch
+       - mongodb-server
+       - qpid-cpp-client
+       - qpid-cpp-server
+       - memcached
+       - nagios
 
    - name: Remove all RDO release pkg
      yum: name=rdo-release state=removed
      ignore_errors: yes
-            
+
    - name: Remove all OpenStack configs
      file: path={{ item }} state=absent
      ignore_errors: yes
@@ -169,7 +186,7 @@
       - /etc/heat
       - /etc/swift  
       - /etc/savanna    
-       
+
    - name: Remove all OpenStack working dirs
      file: path={{ item }} state=absent
      ignore_errors: yes
@@ -181,10 +198,10 @@
       - /var/lib/neutron
       - /var/lib/swift
       - /var/lib/ceilometer
-             
+
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
-         
+
    - name: Remove all the MySQL databases
      mysql_db: name={{ item }} state=absent
      ignore_errors: yes
@@ -199,7 +216,7 @@
       - ovs_neutron
       - heat
       - ceilometer     
-          
+
    - name: Remove all packstack logs and settings
      file: path={{ item }} state=absent
      ignore_errors: yes
@@ -213,7 +230,7 @@
    #----------------
    # MySQL
    #----------------
-         
+
    - name: Remove MySQL
      yum: name=mysql-server state=removed
      ignore_errors: yes       
@@ -226,7 +243,7 @@
       - /etc/mysql
       - /etc/my.cnf
       - /root/.my.cnf
-            
+
    - name: Remove remaining vestiges of other settings
      file: path={{ item }} state=absent
      ignore_errors: yes
@@ -238,16 +255,19 @@
     # GLUSTER
     #------------------
 
-    
-    - name: Shutdown gluster volume
-      shell: gluster volume stop gv0 && gluster volume delete gv0
-      ignore_errors: yes
-#   - name: unmount all glusterfs mounts
+   - name: unmount all glusterfs mounts
+     command: umount /mnt/gv0
+     ignore_errors: yes
 #     mount: name=/mnt/gv0 state=unmounted fstype=gluster 
-#     with_items:
-#      - /gluster-test-mnt
-#       - /mnt/gv0
-       
+
+   - name: Shutdown gluster volume
+     shell: echo "y" | gluster volume stop gv0 force 
+     ignore_errors: yes
+
+   - name: Shutdown gluster volume
+     shell: echo "y" | gluster volume delete gv0
+     ignore_errors: yes
+
    - name: Shutdown all gluster services
      service: name={{ item }} state=stopped
      ignore_errors: yes
@@ -255,20 +275,14 @@
        - glusterd
        - glusterfsd
 
-#   - name: unmount all xfs mounts used by gluster
-#     mount: name={{ item }} state=unmounted fstype=xfs
-#     with_items:
-#       - /export/brick1
-                        
-#   - name: remove loopback devices
-#     shell: losetup -d /dev/loop1
-     
-   - name: Remove all gluster packages
-     yum: name={{ item }} state=removed
+   - name: unmount all xfs mounts used by gluster
+     command: umount /export/brick1 
      ignore_errors: yes
-     with_items:
-      - glusterfs-server
-      - glusterfs-fuse
+#     mount: name=/export/brick1 state=unmounted fstype=xfs
+
+
+   - name: remove loopback devices
+     shell: losetup -d /dev/loop1
 
    - name: Remove all gluster packages
      yum: name={{ item }} state=removed
@@ -276,5 +290,14 @@
      with_items:
       - glusterfs-server
       - glusterfs-fuse
-            
-            
+      - glusterfs
+
+   - name: Remove gluster logs and state dir
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /var/lib/glusterd
+      - /var/log/glusterd
+
+
+
