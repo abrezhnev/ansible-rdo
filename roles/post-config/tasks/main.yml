@@ -4,6 +4,8 @@
 - name: make a link for quantum to neutron
   file: src=/usr/bin/neutron dest=/usr/bin/quantum state=link
 
+#- include: images.yml
+
 - name: check out some post-config action for Openstack
   git: repo=https://github.com/robparrott/openstack-post-config.git dest=/tmp/openstack-post-config
 

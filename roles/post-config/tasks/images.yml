@@ -1,0 +1,32 @@
+---
+
+- name: read in admin password
+  shell: grep OS_PASSWORD /root/keystonerc_admin | awk -F= '{ print $2 }'
+  register: admin_pass
+
+
+- name: read in admin password
+  shell: grep OS_AUTH_URL /root/keystonerc_admin | awk -F= '{ print $2 }'
+  register: auth_url  
+     
+
+- name: upload Cirros to glance
+  glance_image: login_username=admin login_password={{ admin_pass.stdout }} login_tenant_name=admin
+                copy_from=http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img  
+                name=cirros-0.3.1 
+                container_format=bare disk_format=raw is_public=yes state=present 
+  environment: proxy_env               
+         
+- name: upload Ubuntu image to glance
+  glance_image: login_username=admin login_password={{ admin_pass.stdout }} login_tenant_name=admin
+                copy_from=http://cloud-images.ubuntu.com/raring/20131008/raring-server-cloudimg-amd64-disk1.img 
+                name=Ubuntu-13.04
+                container_format=bare disk_format=raw is_public=yes state=present 
+  environment: proxy_env 
+
+- name: upload Fedora to glance
+  glance_image: login_username=admin login_password={{ admin_pass.stdout }} login_tenant_name=admin
+                copy_from=http://download.fedoraproject.org/pub/fedora/linux/releases/19/Images/x86_64/Fedora-x86_64-19-20130627-sda.qcow2
+                name=Fedora19
+                container_format=bare disk_format=qcow2 is_public=yes state=present 
+  environment: proxy_env                 
