@@ -15,13 +15,18 @@ Once these things are setup, and ansible is in your path, you can run the build 
 
     ansible-playbook  -s -u remote-user  -i hosts  site.yml 
 
-where you set the "remote-user" to the one you've specified. The `site.yml` file defines how host groups 
+where you set the "remote-user" to the one you've specified. If you find that the packstack run hangs,
+this may be due to ssh key  propagation issues with sudo, in which case run as root directly:
+
+    ansible-playbook  -u root -i hosts  site.yml 
+
+The `site.yml` file defines how host groups 
 will have roles applied to them. Often we use the remote user `root`; this can be changed as needed, and 
 for example the options would be "-s -u ec2-user" on EC2 instances.
 
 To clean up after a failed build, use the "obliterate" playbook. On EC2 this looks like:
 
-    ansible-playbook -s -u ec2-user -i ec2-hosts playbooks/obliterate.yml 
+    ansible-playbook -s -u ec2-user -i ec2-hosts playbooks/deep-clean.yml 
 
 
 ## The Process
