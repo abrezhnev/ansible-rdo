@@ -6,10 +6,9 @@
 
 - name: create a service user
   user: name=local generate_ssh_key=yes ssh_key_bits=2048 home=/var/lib/local   state=present 
-    
+
 - name: Allow local user to sudo without a password, so we can use ansible
   copy: src=sudoers-local-user  dest=/etc/sudoers.d/local mode=0440 owner=root group=root
 
 - name: copy in authorized_keys file for local user
   copy: src=authorized_keys  dest=/var/lib/local/.ssh/authorized_keys mode=0600 owner=local
-  
