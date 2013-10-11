@@ -12,10 +12,10 @@
   with_items:
      - glusterfs-server
      - glusterfs-fuse
-      
+
 - name: start gluster service
   action: service name=glusterd state=started
-  
+
 #---------------------------------
 # Brick creation
 #
@@ -29,9 +29,11 @@
   when: make_gluster_loopback_brick
 
 - name: create a loopback file
-  shell: dd if=/dev/zero of=/var/lib/gluster-loop/block bs=1G count={{ gluster_brick_size }}  
+  shell: dd if=/dev/zero of=/var/lib/gluster-loop/block bs=1G count={{ gluster_brick_size }}
          creates=/var/lib/gluster-loop/block
   when: make_gluster_loopback_brick
+  async: 3600
+  poll: 5
 
 # The following shold really be a loopback module.
 
@@ -39,12 +41,12 @@
   shell: losetup -d /dev/{{ gluster_vol_device }}
   when: make_gluster_loopback_brick
   ignore_errors: yes
-         
+
 - name: create a loop device
   shell: losetup /dev/{{ gluster_vol_device }} /var/lib/gluster-loop/block
   when: make_gluster_loopback_brick
   ignore_errors: yes
-            
+
 #----------------------
 # Brick mounting   
 #---------------------
@@ -57,17 +59,17 @@
   ignore_errors: yes
   tags:
     - brick
-  
+
 - name: setup a mount point for the brick
   file: path=${gluster_local_storage_path} state=directory
   tags:
     - brick
-     
+
 - name: create mount entry for the new brick
   mount: name=${gluster_local_storage_path} src=/dev/${gluster_vol_device} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
-             
+
 #--------------------
 # SELiux & firewall
 #--------------------
@@ -98,9 +100,8 @@
 
 #- name: modify local firewall settings for gluster
 #  action: copy src=gluster/files/iptables-gluster dest=/etc/sysconfig/iptables owner=root group=root mode=644 backup=yes
-  
+
 #- name: restart local firewall for gluster
 #  action: service name=iptables state=restarted
-  
-        
-      
+
+
