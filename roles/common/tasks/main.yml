@@ -4,18 +4,18 @@
 
 - name: ec2 facts
   ec2_facts:
-    
+
 - name: avoid an update to cloud-init that might break access
   lineinfile: dest=/etc/yum.conf
-              regexp="^exclude=cloud-init" 
-              state=present 
+              regexp="^exclude=cloud-init"
+              state=present
               create=yes
-              line="exclude=cloud-init kernel"  
-                  
+              line="exclude=cloud-init kernel"
+
 - name: Install packages to allow for accelerated mode
   yum: name=python-keyczar  state=installed
   environment: proxy_env  
-                       
+
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
 
@@ -38,28 +38,30 @@
    - dbus
    - libselinux-python
    - openssl-devel
+  async: 60
+  poll: 5 
   notify: restart services
-  
+
 - name: Disable selinux dynamically
   shell: creates=/etc/sysconfig/selinux.disabled setenforce 0 ; touch /etc/sysconfig/selinux.disabled
 
 - name: Disable SELinux in conf file
   copy: src=selinux dest=/etc/sysconfig/selinux
 
-
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
- 
-- name: Test proxy environment
-  shell: rm -f /tmp/proxy-env.txt && env | grep proxy > /tmp/proxy-env.txt
-  environment: proxy_env 
-   
+
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
+  async: 60
+  poll: 5 
   environment: proxy_env
+
+- name: setup a proxy sh init file to source
+  template: src=proxy-env.sh.j2 dest=/etc/profile.d/proxy-env.sh owner=root mode=0775
 
 - name: setup proxy environment for all users
   shell: env | grep _proxy | grep -v SUDO | sed 's/^/export /' > /etc/profile.d/proxy-env.sh
   environment: proxy_env
-    
+
 - include: openvswitch-upgrade.yml

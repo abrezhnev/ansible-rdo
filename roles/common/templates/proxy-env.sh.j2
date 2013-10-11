@@ -1,0 +1,6 @@
+
+{% for k in proxy_env.keys() %}{{k}}={{ proxy_env[k] }} 
+{% endfor %}
+
+{% for k in proxy_env.keys() %}export {{ k }} 
+{% endfor %}
