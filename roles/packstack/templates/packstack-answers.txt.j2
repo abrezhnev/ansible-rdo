@@ -261,8 +261,9 @@ CONFIG_NEUTRON_METADATA_HOSTS={{ ip_list('openstack_neutron') }}
 # metadata agent
 #CONFIG_NEUTRON_METADATA_PW=989a3f58f4b14496
 
-# The type of network to allocate for tenant networks
-CONFIG_NEUTRON_LB_TENANT_NETWORK_TYPE=local
+# The type of network to allocate for tenant networks or the Neutron linuxbridge
+# plugin
+CONFIG_NEUTRON_LB_TENANT_NETWORK_TYPE=
 
 # A comma separated list of VLAN ranges for the Neutron linuxbridge
 # plugin
@@ -273,7 +274,7 @@ CONFIG_NEUTRON_LB_VLAN_RANGES=
 CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
 
 # Type of network to allocate for tenant networks
-CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=local
+CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=gre
 
 # A comma separated list of VLAN ranges for the Neutron openvswitch
 # plugin
@@ -281,19 +282,19 @@ CONFIG_NEUTRON_OVS_VLAN_RANGES=
 
 # A comma separated list of bridge mappings for the Neutron
 # openvswitch plugin
-CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=
+CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=br-tun
 
 # A comma separated list of colon-separated OVS bridge:interface
 # pairs. The interface will be added to the associated bridge.
-CONFIG_NEUTRON_OVS_BRIDGE_IFACES=
+CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-int
 
 # A comma separated list of tunnel ranges for the Neutron openvswitch
 # plugin
-CONFIG_NEUTRON_OVS_TUNNEL_RANGES=
+CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:1000
 
 # Override the IP used for GRE tunnels on this hypervisor to the IP
 # found on the specified interface (defaults to the HOST IP)
-CONFIG_NEUTRON_OVS_TUNNEL_IF=
+CONFIG_NEUTRON_OVS_TUNNEL_IF={{ compute_private_if }}
 
 # The IP address of the server on which to install the OpenStack
 # client packages. An admin "rc" file will also be installed

@@ -10,22 +10,24 @@
 
 - name: Copy over packstack passwores helper script
   copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
-  
+
 - name: Create a packstack passwords answer file
   shell: creates=/tmp/packstack-passwords.txt  /tmp/create-packstack-passwords.sh
-      
+
 - name: Create packstack answers file
   template: src=packstack-answers.txt.j2 dest=/tmp/packstack-answers.txt
-  
+
 - name: Append passwords to packstack answers file  
   shell: cat /tmp/packstack-passwords.txt  >> /tmp/packstack-answers.txt
-  
+
 - name: Duplicate the NEUTRON -> QUANTUM settings for grizzly vs. havana
   shell: grep NEUTRON /tmp/packstack-answers.txt | sed 's/_NEUTRON_/_QUANTUM_/g' >> /tmp/packstack-answers.txt
-  
+
 - name: setup ssh keys for root
-  shell: cd /root/.ssh && rm -f id_rsa* && ssh-keygen -f id_rsa -t rsa -N '' && cat id_rsa.pub >> authorized_keys 
+  shell: cd /root/.ssh && rm -f id_rsa* && ssh-keygen -f id_rsa -t rsa -N '' && cat id_rsa.pub >> authorized_keys
 
 - name: Now run packstack ...
-  shell: packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
-  environment: proxy_env  
+  shell: /usr/bin/packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
+  environment: proxy_env
+  async: 1800
+  poll: 10
