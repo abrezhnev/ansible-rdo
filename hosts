@@ -26,13 +26,13 @@ osc01.rc.fas.harvard.edu
 osc01.rc.fas.harvard.edu
 
 [openstack_neutron]
-osc01.rc.fas.harvard.edu
+osc02.rc.fas.harvard.edu
 
 [openstack_neutron_l3]
-osc01.rc.fas.harvard.edu
+osc02.rc.fas.harvard.edu
 
 [openstack_neutron_dhcp]
-osc01.rc.fas.harvard.edu
+osc02.rc.fas.harvard.edu
 
 [openstack_horizon]
 osc01.rc.fas.harvard.edu
