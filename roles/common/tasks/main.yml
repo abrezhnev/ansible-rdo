@@ -64,4 +64,8 @@
   shell: env | grep _proxy | grep -v SUDO | sed 's/^/export /' > /etc/profile.d/proxy-env.sh
   environment: proxy_env
 
-- include: openvswitch-upgrade.yml
+- include: kernel-update.yml
+
+#- include: openvswitch-upgrade.yml
+
+
