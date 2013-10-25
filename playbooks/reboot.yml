@@ -1,0 +1,11 @@
+#
+# Playbook to reboot all servers
+#
+
+- hosts: all
+  tasks:
+   - name: Reboot all the servers 
+     shell: reboot
+
+
+
