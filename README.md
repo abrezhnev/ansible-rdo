@@ -28,7 +28,6 @@ To clean up after a failed build, use the "obliterate" playbook. On EC2 this loo
 
     ansible-playbook -s -u ec2-user -i ec2-hosts playbooks/deep-clean.yml 
 
-
 ## The Process
 
 By setting up the `hosts` file based on the target categories for your hosts, the current version 
