@@ -13,8 +13,8 @@
      - glusterfs-server
      - glusterfs-fuse
 
-- name: start gluster service
-  action: service name=glusterd state=started
+- name: restart gluster service
+  action: service name=glusterd state=restarted
 
 #---------------------------------
 # Brick creation
