@@ -1,4 +1,4 @@
-#
+##
 #
 # Playbook to remove aopenstack completely from all hosts
 #  USE WITH CAUTION
@@ -264,7 +264,7 @@
      shell: echo "y" | gluster volume stop gv0 force 
      ignore_errors: yes
 
-   - name: Shutdown gluster volume
+   - name: Delete gluster volume
      shell: echo "y" | gluster volume delete gv0
      ignore_errors: yes
 
@@ -275,6 +275,19 @@
        - glusterd
        - glusterfsd
 
+#
+# Clean brick to be used with gluster
+#
+   - name: copy over brick cleanup shell script
+     copy: src=../roles/gluster/files/clear-gluster-xattr.sh  dest=/tmp/clear-gluster-xattr.sh owner=root group=root mode=0755
+
+   - name: install attr package
+     yum: name=${item} state=installed
+     with_items: [which, attr]
+
+   - name: clear out any xattributes if this was used before ...
+     shell: /tmp/clear-gluster-xattr.sh /export/brick1
+
    - name: unmount all xfs mounts used by gluster
      command: umount /export/brick1 
      ignore_errors: yes
@@ -282,8 +295,9 @@
 
 
    - name: remove loopback devices
-     shell: losetup -d /dev/loop1
-
+     shell: losetup -d /dev/loop1 
+     ignore_errors: yes
+     
    - name: Remove all gluster packages
      yum: name={{ item }} state=removed
      ignore_errors: yes
@@ -299,5 +313,11 @@
       - /var/lib/glusterd
       - /var/log/glusterd
 
+   - name: Clear out any xattr data on bricks
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /var/lib/glusterd
+      - /var/log/glusterd
 
 
