@@ -256,16 +256,24 @@
     #------------------
 
    - name: unmount all glusterfs mounts
-     command: umount /mnt/gv0
+     command: umount /mnt/gv-{{ item }}
+     with_items: [cinder, instances, swift]
+     ignore_errors: yes
+#     mount: name=/mnt/gv0 state=unmounted fstype=gluster 
+
+   - name: unmount all glusterfs test mounts
+     command: umount /gluster-test-mnt 
      ignore_errors: yes
 #     mount: name=/mnt/gv0 state=unmounted fstype=gluster 
 
    - name: Shutdown gluster volume
-     shell: echo "y" | gluster volume stop gv0 force 
+     shell: echo "y" | gluster volume stop {{ item }} force 
+     with_items: [cinder, instances, swift]
      ignore_errors: yes
 
    - name: Delete gluster volume
-     shell: echo "y" | gluster volume delete gv0
+     shell: echo "y" | gluster volume delete {{ item }}
+     with_items: [cinder, instances, swift]
      ignore_errors: yes
 
    - name: Shutdown all gluster services
@@ -285,19 +293,20 @@
      yum: name=${item} state=installed
      with_items: [which, attr]
 
-   - name: clear out any xattributes if this was used before ...
-     shell: /tmp/clear-gluster-xattr.sh /export/brick1
+   - name: clear out any xattributes on cany bricks if used before ...
+     shell: /tmp/clear-gluster-xattr.sh /export/{{ item }}-brick
+     with_items: [cinder, instances, swift]
 
    - name: unmount all xfs mounts used by gluster
-     command: umount /export/brick1 
+     command: umount /export/{{ item }}-brick
+     with_items: [cinder, instances, swift]
      ignore_errors: yes
-#     mount: name=/export/brick1 state=unmounted fstype=xfs
-
 
    - name: remove loopback devices
-     shell: losetup -d /dev/loop1 
+     shell: losetup -d /dev/{{ item }}
+     with_items: [ loop1, loop2, loop3 ]
      ignore_errors: yes
-     
+
    - name: Remove all gluster packages
      yum: name={{ item }} state=removed
      ignore_errors: yes

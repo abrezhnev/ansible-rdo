@@ -17,7 +17,9 @@ ram_alloc_ratio: 1.5
 iface: eth0
 
 # Gluster vars
-gluster_local_storage_path: /export/brick1
+brick_mount_cinder: /export/cinder-brick
+brick_mount_instances: /export/instances-brick
+brick_mount_swift: /export/swift-brick
 gluster_volume_name: gv0
 #gluster_vol_options: replica 2
 

@@ -1,0 +1,14 @@
+
+
+# Mount gluster volumes across the cluster
+
+- name: setup a mount point for the gluster fs volume
+  file: path=/mnt/gv-{{ item }} state=directory owner=root group=root mode=0755
+  with_items: [cinder, instances, swift]
+  tags: gluster_volume
+  ignore_errors: yes
+
+- name: mount the gluster volume as another filesystem
+  shell: mount -t glusterfs ${ansible_eth0.ipv4.address}:{{ item }} /mnt/gv-{{ item }}
+  with_items: [cinder, instances, swift]
+  tags: gluster_volume

@@ -12,18 +12,27 @@
 - hosts: gluster_master
   roles: [gluster-master]
 
+- hosts: openstack_compute
+  roles: [gluster-client]
+
+- hosts: openstack_compute
+  roles: [gluster-client]
+
+- hosts: swift_storage_nodes
+  roles: [gluster-client]
+
 - hosts: openstack_controller
   roles:
    - packstack
-#   - controller
+#   - controller  # don't use this ...
 
 - hosts: openstack_compute
-  roles:
-   - compute
+#  roles:
+#   - compute
 
-- hosts: openstack_glance
-  roles: [glance]
+#- hosts: openstack_glance
+#  roles: [glance]
 
-- hosts: openstack_controller
-  roles:
-   - post-config
+#- hosts: openstack_controller
+#  roles:
+#   - post-config

@@ -16,9 +16,11 @@ public_if: eth0
 
 iface: eth0
 
-# Gluster vars for FASRC hosts
+# Gluster and related vars for FASRC hosts
+loopbacks_dir: /var/lib/loopbacks
+
 make_gluster_loopback_brick: true
-gluster_brick_size: 500
+gluster_brick_size: 5
 gluster_vol_device: loop1
 
 
