@@ -1,6 +1,6 @@
 [epel]
 name=Extra Packages for Enterprise Linux 6 - $basearch
-baseurl=http://mirror.seas.harvard.edu/epel/6/$basearch
+baseurl=http://mirrors.rit.edu/fedora/epel/6/$basearch
 failovermethod=priority
 enabled=1
 gpgcheck=1
