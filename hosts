@@ -1,68 +1,73 @@
-[fasrc]
-osc01.rc.fas.harvard.edu
-osc02.rc.fas.harvard.edu
-osc03.rc.fas.harvard.edu
-osc04.rc.fas.harvard.edu
+#[fasrc]
+#osc01.rc.fas.harvard.edu
+#osc02.rc.fas.harvard.edu
+#osc03.rc.fas.harvard.edu
+#osc04.rc.fas.harvard.edu
+
+[noclab]
+#ospoc1.lab.noc.harvard.edu
+#ospoc2.lab.noc.harvard.edu
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 [ec2_hosts]
 #54.221.222.223
 
 [gluster_loopback]
-osc01.rc.fas.harvard.edu
-osc02.rc.fas.harvard.edu
-osc03.rc.fas.harvard.edu
-osc04.rc.fas.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 [openstack_controller]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_keystone]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_glance]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_cinder]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_neutron]
-osc02.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_neutron_l3]
-osc02.rc.fas.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [openstack_neutron_dhcp]
-osc02.rc.fas.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [openstack_horizon]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [openstack_heat]
-osc01.rc.fas.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [openstack_compute]
-osc01.rc.fas.harvard.edu
-osc02.rc.fas.harvard.edu
-osc03.rc.fas.harvard.edu
-osc04.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 [swift_proxy_nodes]
-osc01.rc.fas.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 [swift_storage_nodes]
-osc01.rc.fas.harvard.edu
-osc02.rc.fas.harvard.edu
-osc03.rc.fas.harvard.edu
-osc04.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [gluster_master]
-osc01.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
 
 [gluster_nodes]
-osc01.rc.fas.harvard.edu
-osc02.rc.fas.harvard.edu
-osc03.rc.fas.harvard.edu
-osc04.rc.fas.harvard.edu
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 
 [nfs_nodes]
