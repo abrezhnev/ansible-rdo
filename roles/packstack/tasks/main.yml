@@ -26,8 +26,8 @@
 - name: setup ssh keys for root
   shell: cd /root/.ssh && rm -f id_rsa* && ssh-keygen -f id_rsa -t rsa -N '' && cat id_rsa.pub >> authorized_keys
 
-#- name: Now run packstack ...
-#  shell: /usr/bin/packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
-#  environment: proxy_env
-#  async: 1800
-#  poll: 10
+- name: Now run packstack ...
+  shell: /usr/bin/packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
+  environment: proxy_env
+  async: 1800
+  poll: 10
