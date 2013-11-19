@@ -1,0 +1,45 @@
+---
+# Run temptest tests
+#  on deployed host
+#
+
+- name: read in admin password
+  shell: grep OS_PASSWORD /root/keystonerc_admin | awk -F= '{ print $2 }'
+  register: admin_pass
+
+
+- name: read in admin password
+  shell: grep OS_AUTH_URL /root/keystonerc_admin | awk -F= '{ print $2 }'
+  register: auth_url  
+
+- name: read in admin token
+  shell: grep "^admin_token" /etc/keystone/keystone.conf | awk -F= '{ print $2 }' | sed 's/ //'
+  register: admin_token 
+
+     
+- name: create a test tenant
+  keystone_user: token={{ admin_token.stdout }} tenant=TestTenant1 tenant_description="New Tenant for Testing"
+  register: tenant1
+
+- name: create a test tenant again
+  keystone_user: token={{ admin_token.stdout }} tenant=TestTenant2 tenant_description="New Tenant for Testing v2"
+  register: tenant2
+
+- name: Create the user for tenant 1
+  keystone_user: token={{ admin_token.stdout }} user=testuser1 tenant=TestTenant1
+                                  password={{ admin_pass.stdout }}
+
+- name: Create the user for tenant 2
+  keystone_user: token={{ admin_token.stdout }} user=testuser2 tenant=TestTenant2
+                                  password={{ admin_pass.stdout }}
+
+- name: download tempest 
+  git: repo=https://github.com/openstack/tempest.git
+       dest=/tmp/tempest
+       version=stable/havana
+
+- name: setup a tempest test config
+  template: src=template.conf.j2 dest=/tmp/tempest/etc/template.conf
+
+- name: run tempest tests
+  command: cd /tmp/tempest && testr run --parallel tempest
