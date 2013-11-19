@@ -48,7 +48,7 @@
        - openstack-swift-object-expirer
        - openstack-swift-object-replicator
        - openstack-swift-object-updater
-       - openstack-swift-proxy    
+       - openstack-swift-proxy
        - openvswitch  
        - mongod 
        - httpd
@@ -130,6 +130,7 @@
        - openstack-swift-proxy 
        - openstack-utils 
        - packstack-modules-puppet 
+       - novnc 
        - python-ceilometerclient-doc 
        - python-ceilometerclient 
        - python-ceilometer 
@@ -157,6 +158,7 @@
        - python-webob
        - python-webob1.2
        - python-webob1.0
+       - python-websockify
        - python-pymongo
        - python-qpid
        - python-memcached
