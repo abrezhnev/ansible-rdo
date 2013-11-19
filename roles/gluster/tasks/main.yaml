@@ -49,7 +49,7 @@
   async: 3600
   poll: 5
 
-# The following shold really be a loopback module.
+# The following should really be a loopback module.
 
 - name: deattach associated loop device
   shell: losetup -d /dev/{{ item }}
