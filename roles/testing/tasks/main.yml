@@ -39,7 +39,23 @@
        version=stable/havana
 
 - name: setup a tempest test config
-  template: src=template.conf.j2 dest=/tmp/tempest/etc/template.conf
+  template: src=tempest.conf.j2 dest=/tmp/tempest/etc/tempest.conf
+
+- name: Install packages for testing with tempest
+  yum: name={{ item }} state=installed
+  with_items:
+   - python-testrepository
+   - python-virtualenv
+   - libxslt-devel
+  environment: proxy_env  
+
+- name: Install packages testing with tempest
+  command: easy_install {{ item }}
+  with_items:
+   - flake8
+   - testresources
+   - nose-alembic-attrib
+  environment: proxy_env
 
 - name: run tempest tests
-  command: cd /tmp/tempest && testr run --parallel tempest
+  command: cd /tmp/tempest && ./run_tests.sh
