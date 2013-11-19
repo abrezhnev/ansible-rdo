@@ -31,3 +31,6 @@
   environment: proxy_env
   async: 1800
   poll: 10
+
+- name: Retrieve the installed credentials for admin
+  fetch: src=keystonerc_admin dest=keystonerc_admin flat=yes
