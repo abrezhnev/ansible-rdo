@@ -38,7 +38,7 @@
                 container_format=bare disk_format=iso is_public=yes state=present 
   environment: proxy_env     
 
-- name: upload Knoppix to glance
+- name: upload NST to glance
   glance_image: login_username=admin login_password={{ admin_pass.stdout }} login_tenant_name=admin
                 copy_from=http://softlayer-dal.dl.sourceforge.net/project/nst/NST/NST%2018-4509/nst-18-4509.i686.iso
                 name=NetworkSecurityToolkit-18
