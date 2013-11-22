@@ -1,0 +1,44 @@
+#!/bin/bash
+
+cd /tmp
+
+#
+# Make sure we have an image to use 
+#
+ 
+if ! [ -r /tmp/cirros-0.3.1-x86_64-disk.img ]; then 
+	wget http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img 
+fi
+
+CIRROS_IMAGE_ID=$( glance index | grep cirros-0.3.1 | awk '{ print $1}' )
+
+if [ -z ${CIRROS_IMAGE_ID} ]; then
+	IMAGE_INFO=$( glance image-create --name cirros-0.3.1 --is-public True --disk-format qcow2 --container-format bare --file cirros-0.3.1-x86_64-disk.img )
+    CIRROS_IMAGE_ID=$( echo "${IMAGE_INFO}" |  grep "| id" | awk '{print $4}' )
+fi
+
+echo "IMAGE_ID=${CIRROS_IMAGE_ID}"
+
+
+#
+# Make sure we have another image to use 
+#
+ 
+if ! [ -r /tmp/Fedora-x86_64-19-20130627-sda.qcow2 ]; then 
+	wget http://download.fedoraproject.org/pub/fedora/linux/releases/19/Images/x86_64/Fedora-x86_64-19-20130627-sda.qcow2
+fi
+
+F19_IMAGE_ID=$( glance index | grep Fedora19 | awk '{ print $1}' )
+
+if [ -z ${F19_IMAGE_ID} ]; then
+	IMAGE_INFO=$( glance image-create --name Fedora19 --is-public True --disk-format qcow2 --container-format bare --file Fedora-x86_64-19-20130627-sda.qcow2 )
+    F19_IMAGE_ID=$( echo "${IMAGE_INFO}" |  grep "| id" | awk '{print $4}' )
+fi
+
+echo "IMAGE2_ID=${F19_IMAGE_ID}"
+
+
+#
+# Create Neutron objects
+# 
+

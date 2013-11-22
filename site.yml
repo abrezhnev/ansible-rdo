@@ -20,16 +20,20 @@
 
 - hosts: openstack_controller
   roles:
-   - packstack
+  - packstack
 #   - controller  # don't use this ...
 
 - hosts: openstack_compute
-#  roles:
+  roles:
 #   - compute
+
+- hosts: testing
+  roles:
+  - testing
 
 #- hosts: openstack_glance
 #  roles: [glance]
 
-#- hosts: openstack_controller
-#  roles:
-#   - post-config
+- hosts: openstack_controller
+  roles:
+   - post-config

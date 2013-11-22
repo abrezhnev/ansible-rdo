@@ -3,6 +3,10 @@
 #  on deployed host
 #
 
+
+#
+# Read OS credentials
+#
 - name: read in admin password
   shell: grep OS_PASSWORD /root/keystonerc_admin | awk -F= '{ print $2 }'
   register: admin_pass
@@ -16,7 +20,28 @@
   shell: grep "^admin_token" /etc/keystone/keystone.conf | awk -F= '{ print $2 }' | sed 's/ //'
   register: admin_token 
 
-     
+#
+# Create and read EC2 credentials
+#
+
+- name: create ec2 credentials script
+  template: src=create-ec2-credentials.sh.j2 dest=/tmp/create-ec2-credentials.sh mode=755
+  
+- name: create ec2 credentials 
+  shell: source /root/keystonerc_admin && /tmp/create-ec2-credentials.sh
+
+- name: read in EC2 access key 
+  shell: grep aws_access_key_id /root/.aws.conf | awk -F= '{ print $2 }'
+  register: access_key 
+
+- name: read in EC2 secret key 
+  shell: grep aws_secret_access_key /root/.aws.conf | awk -F= '{ print $2 }'
+  register: secret_key 
+
+#
+# Create testing objects 
+#
+
 - name: create a test tenant
   keystone_user: token={{ admin_token.stdout }} tenant=TestTenant1 tenant_description="New Tenant for Testing"
   register: tenant1
@@ -33,6 +58,22 @@
   keystone_user: token={{ admin_token.stdout }} user=testuser2 tenant=TestTenant2
                                   password={{ admin_pass.stdout }}
 
+- name: write test object creation script
+  template: src=create-testing-objects.sh.j2 dest=/tmp/create-testing-objects.sh mode=755
+  
+- name: create test objects 
+  shell: source /root/keystonerc_admin && /tmp/create-testing-objects.sh 
+  register: test_object_info
+  environment: proxy_env 
+
+- name: grab image ID   
+  shell: echo {{ test_object_info.stdout }} | grep IMAGE_ID | awk -F= '{ print $2 }'
+  register: image_id 
+
+
+#
+#  Prepare to run tempest
+#           
 - name: download tempest 
   git: repo=https://github.com/openstack/tempest.git
        dest=/tmp/tempest
@@ -55,7 +96,35 @@
    - flake8
    - testresources
    - nose-alembic-attrib
+   - awscli
   environment: proxy_env
 
-- name: run tempest tests
-  command: cd /tmp/tempest && ./run_tests.sh
+
+#
+# Run API tests and gather results
+#
+- name: run tempest API tests
+  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | PYTHONPATH=/tmp/tempest ./run_tests.sh -c  -- -v -w tempest/api/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 && mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
+  with_items: [ identity, image, volume, compute, network, object_storage, orchestration ]
+
+#
+# Run other tests 
+#
+- name: run tempest API tests for Identity API
+  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | ./run_tests.sh -c  -- -v -w tempest/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 && mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
+  with_items: [ cli, thirdparty, scenario ]
+
+#
+# Grab all the test log and outputs
+#  
+- name: Grab API test logs
+  fetch: src=/tmp/tempest-{{ item }}.log dest=tempest-{{ item }}.log flat=yes
+  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
+
+- name: Grab API test outputs
+  fetch: src=/tmp/tempest-{{ item }}.out dest=tempest-{{ item }}.out flat=yes
+  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
+
+
+# Stress tests go here ... once I can figure out how to run them.
+
