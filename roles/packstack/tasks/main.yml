@@ -8,6 +8,13 @@
    - openstack-packstack 
    - mod_ssl
 
+- name: install packages that packstack will miss dependencies on (hopefuly these will go away ..)
+  yum: name={{ item }} state=present
+  environment: proxy_env
+  with_items:
+   - python-jsonpatch
+   - python-jsonpointer
+
 - name: Copy over packstack passwores helper script
   copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
 
@@ -29,7 +36,7 @@
 - name: Now run packstack ...
   shell: /usr/bin/packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
   environment: proxy_env
-  async: 1800
+  async: 3600
   poll: 10
 
 - name: Retrieve the installed credentials for admin
