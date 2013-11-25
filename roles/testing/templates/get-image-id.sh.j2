@@ -1,0 +1,7 @@
+#!/bin/bash
+
+NAME=$1 
+
+ID=$( glance index | grep ${NAME} | awk '{print $1}' ) 
+
+echo ${ID}

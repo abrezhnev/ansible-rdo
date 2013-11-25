@@ -14,6 +14,23 @@
   
 %}{%- endmacro %}
 
+{# Macro to provide correct protocol string for Cinder #}
+
+{% macro storage_protocol() -%}{% 
+
+  if cinder_backend == 'gluster' %}gluster{% 
+
+  endif  
+
+  %}{%
+
+  if cinder_backend == 'lvm' %}iSCSI{% 
+
+  endif 
+
+%}{%- endmacro %}
+
+
 #log_config = /opt/stack/tempest/etc/logging.conf.sample
 
 # disable logging to the stderr
@@ -106,7 +123,7 @@ allow_tenant_reuse = true
 # Reference data for tests. The ref and ref_alt should be
 # distinct images/flavors.
 image_ref = {{ image_id.stdout }}
-image_ref_alt = {{ image_id2.stdout }}
+image_ref_alt = {{ image2_id.stdout }}
 flavor_ref = 1
 flavor_ref_alt = 2
 
@@ -312,7 +329,9 @@ backend2_name = BACKEND_2
 
 # Protocol and vendor of volume backend to target when testing volume-types.
 # You should update to reflect those exported by configured backend driver.
-storage_protocol = iSCSI
+#storage_protocol = iSCSI
+#storage_protocol = glusterfs
+storage_protocol = {{ storage_protocol() }}
 vendor_name = Open Source
 
 
@@ -484,7 +503,7 @@ timeout = 15
 # Whether or not cinder is expected to be available
 cinder = True
 # Whether or not neutron is expected to be available
-neutron = True
+neutron = False
 # Whether or not glance is expected to be available
 glance = True
 # Whether or not swift is expected to be available

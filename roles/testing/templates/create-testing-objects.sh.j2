@@ -17,7 +17,7 @@ if [ -z ${CIRROS_IMAGE_ID} ]; then
     CIRROS_IMAGE_ID=$( echo "${IMAGE_INFO}" |  grep "| id" | awk '{print $4}' )
 fi
 
-echo "IMAGE_ID=${CIRROS_IMAGE_ID}"
+echo "IMAGE_ID: ${CIRROS_IMAGE_ID}"
 
 
 #
@@ -35,7 +35,7 @@ if [ -z ${F19_IMAGE_ID} ]; then
     F19_IMAGE_ID=$( echo "${IMAGE_INFO}" |  grep "| id" | awk '{print $4}' )
 fi
 
-echo "IMAGE2_ID=${F19_IMAGE_ID}"
+echo "IMAGE2_ID: ${F19_IMAGE_ID}"
 
 
 #
