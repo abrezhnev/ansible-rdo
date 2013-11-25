@@ -1,0 +1,16 @@
+##
+#
+# Playbook to remove openstack loopback disk images
+#  used as gluster bricks
+#
+
+- hosts: all
+  tasks:
+ 
+   - name: Remove all loopback images files
+     file: path=/home/loopbacks/{{ item }} state=absent
+     with_items:
+      - cinder-block
+      - instances-block
+      - swift-block
+ 
