@@ -66,15 +66,21 @@
   register: test_object_info
   environment: proxy_env 
 
-- name: grab image ID   
-  shell: echo {{ test_object_info.stdout }} | grep IMAGE_ID | awk -F= '{ print $2 }'
-  register: image_id 
+- name: create script to read remote image id
+  template: src=get-image-id.sh.j2 dest=/tmp/get-image-id.sh mode=755
 
+- name: grab image ID
+  shell:  source /root/keystonerc_admin && /tmp/get-image-id.sh  cirros-0.3.1 
+  register: image_id
+
+- name: grab image 2 ID
+  shell: source /root/keystonerc_admin && /tmp/get-image-id.sh Fedora19
+  register: image2_id
 
 #
 #  Prepare to run tempest
 #           
-- name: download tempest 
+- name: pull tempest from GitHub
   git: repo=https://github.com/openstack/tempest.git
        dest=/tmp/tempest
        version=stable/havana
@@ -104,7 +110,7 @@
 # Run API tests and gather results
 #
 - name: run tempest API tests
-  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | PYTHONPATH=/tmp/tempest ./run_tests.sh -c  -- -v -w tempest/api/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 && mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
+  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | PYTHONPATH=/tmp/tempest ./run_tests.sh -c  -- -v -w tempest/api/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 ; mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
   with_items: [ identity, image, volume, compute, network, object_storage, orchestration ]
 
 #
