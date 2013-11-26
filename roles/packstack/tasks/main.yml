@@ -7,6 +7,7 @@
   with_items:
    - openstack-packstack 
    - mod_ssl
+   - sheepdog
 
 - name: install packages that packstack will miss dependencies on (hopefuly these will go away ..)
   yum: name={{ item }} state=present
@@ -14,6 +15,7 @@
   with_items:
    - python-jsonpatch
    - python-jsonpointer
+   - python-openstackclient
 
 - name: Copy over packstack passwores helper script
   copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
