@@ -1,0 +1,22 @@
+#!/bin/bash
+
+function get_k_id 
+{
+   RETVAL=$( keystone ${1}-list | grep ${2} | awk '{print $2}' )
+   echo $RETVAL
+}
+
+function get_q_id 
+{
+   RETVAL=$( neutron ${1}-list | grep ${2} | awk '{print $2}' )
+   echo $RETVAL
+}
+
+# Remove network objects created by unit tests
+neutron router-list | grep "[0-9][0-9]-router" | awk '{print $2}' | xargs -ixxx neutron router-delete xxx
+neutron subnet-list | grep "[0-9][0-9]-subnet" | awk '{print $2}' | xargs -ixxx neutron subnet-delete xxx
+neutron net-list | grep "[0-9][0-9]-network"   | awk '{print $2}' | xargs -ixxx neutron net-delete xxx
+
+# Remove testing tenants and users
+keystone tenant-list | grep "[0-9][0-9]-tenant-desc" | awk '{print $2}' | xargs -ixxx keystone tenant-delete xxx
+keystone user-list   | grep "[0-9][0-9]-user"        | awk '{print $2}' | xargs -ixxx keystone user-delete xxx

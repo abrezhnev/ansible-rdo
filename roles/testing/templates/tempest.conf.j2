@@ -1,5 +1,4 @@
 [DEFAULT]
-
 {# Macro to create a CSV list of IP addresses #}
 
 {% macro ip_list(groupname) -%}{% 
@@ -30,7 +29,6 @@
 
 %}{%- endmacro %}
 
-
 #log_config = /opt/stack/tempest/etc/logging.conf.sample
 
 # disable logging to the stderr
@@ -44,6 +42,7 @@ lock_path=/tmp
 
 default_log_levels=tempest.stress=INFO,amqplib=WARN,sqlalchemy=WARN,boto=WARN,suds=INFO,keystone=INFO,eventlet.wsgi.server=WARN
 
+# pub_net_id = {{ pub_net_id }}
 
 
 [identity]
@@ -156,10 +155,10 @@ run_ssh = false
 ssh_user = cirros
 
 # Visible fixed network name
-fixed_network_name = private
+fixed_network_name = test-private-net-1
 
 # Network id used for SSH (public, private, etc)
-network_for_ssh = public
+network_for_ssh = {{ pub_net_id.stdout }} 
 
 # IP version of the address used for SSH
 ip_version_for_ssh = 4
@@ -177,7 +176,7 @@ ready_wait = 0
 # Number of seconds to wait for output from ssh channel
 ssh_channel_timeout = 60
 
-# Dose the SSH uses Floating IP?
+# Does the SSH uses Floating IP?
 use_floatingip_for_ssh = True
 
 # The type of endpoint for a Compute API service. Unless you have a
@@ -273,7 +272,7 @@ catalog_type = network
 
 # A large private cidr block from which to allocate smaller blocks for
 # tenant networks.
-tenant_network_cidr = 10.100.0.0/16
+tenant_network_cidr = 10.123.0.0/16
 
 # The mask bits used to partition the tenant block.
 tenant_network_mask_bits = 24
@@ -283,15 +282,13 @@ tenant_network_mask_bits = 24
 tenant_networks_reachable = false
 
 # Id of the public network that provides external connectivity.
-public_network_id = {$PUBLIC_NETWORK_ID}
+public_network_id = {{ pub_net_id.stdout }} 
 
 # Id of a shared public router that provides external connectivity.
 # A shared public router would commonly be used where IP namespaces
 # were disabled.  If namespaces are enabled, it would be preferable
 # for each tenant to have their own router.
-public_router_id = {$PUBLIC_ROUTER_ID}
-
-
+public_router_id = test-router-1
 
 
 
@@ -503,7 +500,7 @@ timeout = 15
 # Whether or not cinder is expected to be available
 cinder = True
 # Whether or not neutron is expected to be available
-neutron = False
+neutron = True
 # Whether or not glance is expected to be available
 glance = True
 # Whether or not swift is expected to be available

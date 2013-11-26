@@ -61,6 +61,9 @@
 - name: write test object creation script
   template: src=create-testing-objects.sh.j2 dest=/tmp/create-testing-objects.sh mode=755
   
+- name: write test object deletion script
+  template: src=delete-testing-objects.sh.j2 dest=/tmp/delete-testing-objects.sh mode=755
+  
 - name: create test objects 
   shell: source /root/keystonerc_admin && /tmp/create-testing-objects.sh 
   register: test_object_info
@@ -77,6 +80,10 @@
   shell: source /root/keystonerc_admin && /tmp/get-image-id.sh Fedora19
   register: image2_id
 
+- name: read in public router ID
+  shell:  source /root/keystonerc_admin && neutron net-list | grep test-public-net-1 | awk '{print $2}'
+  register: pub_net_id
+
 #
 #  Prepare to run tempest
 #           
@@ -88,6 +95,9 @@
 - name: setup a tempest test config
   template: src=tempest.conf.j2 dest=/tmp/tempest/etc/tempest.conf
 
+- name: retrieve tempest.conf locally for running the tests from your client
+  fetch: src=/tmp/tempest/etc/tempest.conf dest=tempest.conf flat=yes
+
 - name: Install packages for testing with tempest
   yum: name={{ item }} state=installed
   with_items:
@@ -96,7 +106,7 @@
    - libxslt-devel
   environment: proxy_env  
 
-- name: Install packages testing with tempest
+- name: Install python modules testing with tempest
   command: easy_install {{ item }}
   with_items:
    - flake8
@@ -109,27 +119,27 @@
 #
 # Run API tests and gather results
 #
-- name: run tempest API tests
-  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | PYTHONPATH=/tmp/tempest ./run_tests.sh -c  -- -v -w tempest/api/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 ; mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
-  with_items: [ identity, image, volume, compute, network, object_storage, orchestration ]
+#- name: run tempest API tests
+#  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | PYTHONPATH=/tmp/tempest ./run_tests.sh -c  -- -v -w tempest/api/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 ; mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
+#  with_items: [ identity, image, volume, compute, network, object_storage, orchestration ]
 
 #
 # Run other tests 
 #
-- name: run tempest API tests for Identity API
-  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | ./run_tests.sh -c  -- -v -w tempest/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 && mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
-  with_items: [ cli, thirdparty, scenario ]
+#- name: run tempest API tests for Identity API
+#  shell: cd /tmp/tempest && > /tmp/tempest.log && echo "Y" | ./run_tests.sh -c  -- -v -w tempest/{{ item }} > /tmp/tempest-{{ item }}.out 2>&1 && mv /tmp/tempest.log /tmp/tempest-{{ item }}.log
+#  with_items: [ cli, thirdparty, scenario ]
 
 #
 # Grab all the test log and outputs
 #  
-- name: Grab API test logs
-  fetch: src=/tmp/tempest-{{ item }}.log dest=tempest-{{ item }}.log flat=yes
-  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
+#- name: Grab API test logs
+#  fetch: src=/tmp/tempest-{{ item }}.log dest=tempest-{{ item }}.log flat=yes
+#  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
 
-- name: Grab API test outputs
-  fetch: src=/tmp/tempest-{{ item }}.out dest=tempest-{{ item }}.out flat=yes
-  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
+#- name: Grab API test outputs
+#  fetch: src=/tmp/tempest-{{ item }}.out dest=tempest-{{ item }}.out flat=yes
+#  with_items: [ identity, image, volume, compute, network, object_storage, orchestration, cli, thirdparty, scenario ]
 
 
 # Stress tests go here ... once I can figure out how to run them.
