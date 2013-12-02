@@ -234,8 +234,11 @@
    #----------------
 
    - name: Remove MySQL
-     yum: name=mysql-server state=removed
-     ignore_errors: yes       
+     yum: name={{ item }} state=removed
+     ignore_errors: yes     
+     with_items:
+      - mysql-server
+      - mysql  
 
    - name: Remove remaining vestiges of MySQL
      file: path={{ item }} state=absent
