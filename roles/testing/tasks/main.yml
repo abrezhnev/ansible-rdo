@@ -73,11 +73,11 @@
   template: src=get-image-id.sh.j2 dest=/tmp/get-image-id.sh mode=755
 
 - name: grab image ID
-  shell:  source /root/keystonerc_admin && /tmp/get-image-id.sh  cirros-0.3.1 
+  shell:  source /root/keystonerc_admin && /tmp/get-image-id.sh  testing-cirros-0.3.1
   register: image_id
 
 - name: grab image 2 ID
-  shell: source /root/keystonerc_admin && /tmp/get-image-id.sh Fedora19
+  shell: source /root/keystonerc_admin && /tmp/get-image-id.sh  testing-Fedora19
   register: image2_id
 
 - name: read in public router ID
