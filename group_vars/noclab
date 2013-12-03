@@ -20,7 +20,7 @@ iface: eth0
 loopbacks_dir: /home/loopbacks
 
 make_gluster_loopback_brick: true
-gluster_brick_size: 5
+gluster_brick_size: 200
 gluster_vol_device: loop1
 
 
