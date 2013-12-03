@@ -55,6 +55,10 @@
        - qpidd
        - memcached
        - nagios
+       - tgtd
+       - libvirt-guests
+       - libvirtd
+
 
    - name: Remove all OpenStack packages
      yum: name={{ item }} state=removed
@@ -200,6 +204,13 @@
       - /var/lib/neutron
       - /var/lib/swift
       - /var/lib/ceilometer
+      - /var/log/keystone
+      - /var/log/cinder
+      - /var/log/glance
+      - /var/log/nova
+      - /var/log/neutron
+      - /var/log/swift
+      - /var/log/ceilometer
 
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
@@ -229,13 +240,38 @@
       - /tmp/packstack-passwords.txt       
       - /root/keystonerc_admin      
 
+   - name: Remove any leftover userses
+     user: name={{ item }} state=absent
+     with_items:
+      - quantum
+      - neutron
+      - swift
+      - nova
+      - ceilometer
+      - keystone
+      - cinder
+      - glance
+
+   - name: remove associated groupses
+     group: name={{ item }} state=absent
+     with_items:
+      - quantum
+      - neutron
+      - swift
+      - nova
+      - ceilometer
+      - keystone
+      - cinder
+      - glance
+
+
    #----------------
    # MySQL
    #----------------
 
    - name: Remove MySQL
      yum: name={{ item }} state=removed
-     ignore_errors: yes     
+     ignore_errors: yes
      with_items:
       - mysql-server
       - mysql  
@@ -334,4 +370,20 @@
       - /var/lib/glusterd
       - /var/log/glusterd
 
+    #------------------
+    # LibVirt
+    #------------------
+
+   - name: Remove all libvirt packages
+     yum: name={{ item }} state=removed
+     ignore_errors: yes
+     with_items:
+       - libvirt
+
+   - name: Clear out libvirt data and logs
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /var/lib/libvirt 
+      - /var/log/libvirt
 
