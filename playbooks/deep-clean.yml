@@ -243,6 +243,7 @@
    - name: Remove any leftover userses
      user: name={{ item }} state=absent
      with_items:
+      - heat
       - quantum
       - neutron
       - swift
@@ -255,6 +256,7 @@
    - name: remove associated groupses
      group: name={{ item }} state=absent
      with_items:
+      - heat     
       - quantum
       - neutron
       - swift
