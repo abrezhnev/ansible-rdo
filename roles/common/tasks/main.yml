@@ -28,6 +28,9 @@
 - name: Create the GPG key for EPEL
   copy: src=RPM-GPG-KEY-EPEL-6 dest=/etc/pki/rpm-gpg
 
+- name: get rid of yum priorities
+  copy: src=priorities.conf dest=/etc/yum/pluginconf.d/priorities.conf 
+
 - name: Install required packages
   yum: name={{ item }} state=installed
   environment: proxy_env  
