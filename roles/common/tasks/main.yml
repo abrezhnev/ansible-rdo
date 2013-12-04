@@ -53,6 +53,7 @@
 
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
+  ignore_errors: yes
 
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
