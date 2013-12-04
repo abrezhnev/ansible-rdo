@@ -7,21 +7,24 @@
    - common
 
 - hosts: gluster_nodes
-#  roles: [gluster]
+  roles: [gluster]
 
 - hosts: gluster_master
-#  roles: [gluster-master]
+  roles: [gluster-master]
 
 - hosts: openstack_compute
-#  roles: [gluster-client]
+  roles: [gluster-client]
 
 - hosts: swift_storage_nodes
-#  roles: [gluster-client]
+  roles: [gluster-client]
 
 - hosts: openstack_controller
   roles:
   - packstack
 #   - controller  # don't use this ...
+
+- hosts: openstack_glance
+#  roles: [glance]
 
 - hosts: openstack_compute
   roles:
@@ -31,8 +34,7 @@
   roles:
   - testing
 
-#- hosts: openstack_glance
-#  roles: [glance]
+
 
 - hosts: openstack_controller
   roles:
