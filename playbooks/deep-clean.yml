@@ -31,6 +31,7 @@
        - openstack-nova-xvpvncproxy
        - neutron-dhcp-agent
        - neutron-l3-agent
+       - neutron-lbaas-agent
        - neutron-metadata-agent
        - neutron-openvswitch-agent
        - neutron-ovs-cleanup
@@ -56,8 +57,7 @@
        - memcached
        - nagios
        - tgtd
-       - libvirt-guests
-       - libvirtd
+
 
 
    - name: Remove all OpenStack packages
@@ -375,6 +375,16 @@
     #------------------
     # LibVirt
     #------------------
+
+   - name: destroy running instances
+     shell: virsh list  | awk '{print $1}' | xargs -ixxx virsh destroy  xxx
+
+   - name: Shutdown all OpenStack services     
+     service: name={{ item }} state=stopped
+     ignore_errors: yes
+     with_items:
+       - libvirt-guests
+       - libvirtd
 
    - name: Remove all libvirt packages
      yum: name={{ item }} state=removed
