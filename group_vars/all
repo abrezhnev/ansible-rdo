@@ -2,6 +2,9 @@
 # Variables for openstack
 openstack_release: havana
 
+# System vars
+ntp_server: tick.mit.edu
+
 # Cinder vars
 
 # lvm or gluster or nfs
