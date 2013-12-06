@@ -27,13 +27,10 @@
   roles:
 #   - compute
 
-- hosts: testing
-  roles:
-#  - testing
-
 #- hosts: openstack_glance
 #  roles: [glance]
 
 - hosts: openstack_controller
   roles:
    - post-config
+   - testing
