@@ -7,7 +7,7 @@ proxy_env:
   https_proxy: http://proxy.noc.harvard.edu:3128
   no_proxy:    127.0.0.1,localhost,lab.noc.harvard.edu,10.255.73.103,10.242.108.9,10.242.108.10,10.242.108.11
       
-ntp_server: 10.73.255.1
+#ntp_server: 10.255.73.1
 
 # Neutron/Quantum vars for FAS hosts
 

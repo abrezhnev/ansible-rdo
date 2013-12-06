@@ -3,8 +3,8 @@
 
 - hosts: all
   roles:
-   - huit-accessible
-   - common
+#   - huit-accessible
+#   - common
 
 - hosts: gluster_nodes
 #  roles: [gluster]
@@ -20,7 +20,7 @@
 
 - hosts: openstack_controller
   roles:
-  - packstack
+#  - packstack
 #   - controller  # don't use this ...
 
 - hosts: openstack_compute
@@ -29,7 +29,7 @@
 
 - hosts: testing
   roles:
-  - testing
+#  - testing
 
 #- hosts: openstack_glance
 #  roles: [glance]

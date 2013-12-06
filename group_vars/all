@@ -3,7 +3,7 @@
 openstack_release: havana
 
 # System vars
-ntp_server: tick.mit.edu
+ntp_server: time.harvard.edu
 
 # Cinder vars
 

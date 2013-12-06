@@ -4,6 +4,9 @@
 - name: make a link for quantum to neutron
   file: src=/usr/bin/neutron dest=/usr/bin/quantum state=link
 
+- name: copy over a set of cleanup functions to clear out testing and other objects
+  copy: src=cleanup_functions.sh dest=/root/cleanup_functions.sh mode=0664
+
 #- include: images.yml
 
 - name: check out some post-config action for Openstack
