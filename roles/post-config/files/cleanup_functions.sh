@@ -55,6 +55,18 @@ function openstack_purge_volumes()
     done
 }
 
+function openstack_purge_secgroups)
+{
+    SEARCH_STRING="${1: }"
+    SGIDS=$( nova  secgroup-list | egrep -iv '\-\-\-\-|\| ID' | grep "${SEARCH_STRING}" | awk '{print $2}' )
+    for sg in ${SGIDS}
+    do
+      echo deleting security-group ${sg}
+      nova secgroup-delete ${sg}
+    done
+}
+
+
 function openstack_purge_instances()
 {
     SEARCH_STRING="${1: }"
@@ -101,7 +113,8 @@ function openstack_purge_subnets()
 function openstack_purge_nets()
 {
     SEARCH_STRING="${1: }"
-    for net in `neutron net-list -c id | egrep -v '\-\-|id' | grep "${SEARCH_STRING}" | awk '{print $2}'`
+    NETS=$( neutron net-list -c id -c name | egrep -v '\-\-\-\-|id' | grep "${SEARCH_STRING}" | awk '{print $2}'` )
+    for net in $NETS
     do
         neutron net-delete ${net}
     done
