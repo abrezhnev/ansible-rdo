@@ -7,6 +7,9 @@
 - name: copy over a set of cleanup functions to clear out testing and other objects
   copy: src=cleanup_functions.sh dest=/root/cleanup_functions.sh mode=0664
 
+- name: copy over a testing cleanup scripts
+  copy: src=cleanup_tempest_objects.sh dest=/root/cleanup_tempest_objects.sh mode=0775
+
 #- include: images.yml
 
 - name: check out some post-config action for Openstack
