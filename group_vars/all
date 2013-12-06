@@ -5,7 +5,9 @@ openstack_release: havana
 # System vars
 ntp_server: time.harvard.edu
 
+#
 # Cinder vars
+#
 
 # lvm or gluster or nfs
 #cinder_backend: gluster
@@ -13,14 +15,20 @@ cinder_backend: lvm
 
 cinder_volume_size: 100G
 
+#
 # Nova vars
+#
 cpu_alloc_ratio: 16.0
 ram_alloc_ratio: 1.5
 
-#Neutron/Quantum vars
+#
+# Neutron/Quantum vars
+#
 iface: eth0
 
+#
 # Gluster vars
+#
 brick_mount_cinder: /export/cinder-brick
 brick_mount_instances: /export/instances-brick
 brick_mount_swift: /export/swift-brick

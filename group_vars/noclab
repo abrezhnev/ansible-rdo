@@ -9,8 +9,9 @@ proxy_env:
       
 #ntp_server: 10.255.73.1
 
+#
 # Neutron/Quantum vars for FAS hosts
-
+#
 compute_private_if: eth0              # Interface that compute hosts will use for VM traffic
 network_private_if: eth0              # Interface that network hosts will use for VM traffic
 
@@ -18,7 +19,9 @@ public_if: eth0
 
 iface: eth0
 
-# Gluster and related vars for FASRC hosts
+#
+# Gluster
+#
 loopbacks_dir: /home/loopbacks
 
 make_gluster_loopback_brick: true
