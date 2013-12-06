@@ -8,7 +8,7 @@ function openstack_purge_tenants()
                awk '{print $4}' | grep -v id )
    for ID in ${TENANTIDS}
    do    
-       echo "Deleting tenant ${USERID}"
+       echo "Deleting tenant ${ID}"
        keystone tenant-delete ${ID}
    done
 }
@@ -55,7 +55,7 @@ function openstack_purge_volumes()
     done
 }
 
-function openstack_purge_secgroups)
+function openstack_purge_secgroups()
 {
     SEARCH_STRING="${1: }"
     SGIDS=$( nova  secgroup-list | egrep -iv '\-\-\-\-|\| ID' | grep "${SEARCH_STRING}" | awk '{print $2}' )
