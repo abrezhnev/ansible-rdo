@@ -70,23 +70,23 @@ uri_v3 = http://{{ ip_list('openstack_keystone') }}:5000/v3/
 region = RegionOne
 
 # This should be the username of a user WITHOUT administrative privileges
-username = testuser1
+username = test_user
 
 # The above non-administrative user's password
 password = {{ admin_pass.stdout }}
 
 # The above non-administrative user's tenant name
-tenant_name = TestTenant1
+tenant_name = test_tenant
 
 # This should be the username of an alternate user WITHOUT
 # administrative privileges
-alt_username = testuser2
+alt_username = test_user2
 
 # The above non-administrative user's password
 alt_password = {{ admin_pass.stdout }}
 
 # The above non-administrative user's tenant name
-alt_tenant_name = TestTenant2
+alt_tenant_name = test_tenant2
 
 # This should be the username of a user WITH administrative privileges
 admin_username = admin
@@ -149,7 +149,7 @@ build_timeout = 600
 # Run additional tests that use SSH for instance validation?
 # This requires the instances be routable from the host
 #  executing the tests
-run_ssh = false
+run_ssh = true
 
 # Name of a user used to authenticate to an instance.
 ssh_user = cirros

@@ -43,19 +43,19 @@
 #
 
 - name: create a test tenant
-  keystone_user: token={{ admin_token.stdout }} tenant=TestTenant1 tenant_description="New Tenant for Testing"
+  keystone_user: token={{ admin_token.stdout }} tenant=test_tenant tenant_description="New Tenant for Testing"
   register: tenant1
 
 - name: create a test tenant again
-  keystone_user: token={{ admin_token.stdout }} tenant=TestTenant2 tenant_description="New Tenant for Testing v2"
+  keystone_user: token={{ admin_token.stdout }} tenant=test_tenant2  tenant_description="New Tenant for Testing v2"
   register: tenant2
 
 - name: Create the user for tenant 1
-  keystone_user: token={{ admin_token.stdout }} user=testuser1 tenant=TestTenant1
+  keystone_user: token={{ admin_token.stdout }} user=test_user tenant=test_tenant
                                   password={{ admin_pass.stdout }}
 
 - name: Create the user for tenant 2
-  keystone_user: token={{ admin_token.stdout }} user=testuser2 tenant=TestTenant2
+  keystone_user: token={{ admin_token.stdout }} user=test_user2 tenant=test_tenant2
                                   password={{ admin_pass.stdout }}
 
 - name: write test object creation script
@@ -97,6 +97,9 @@
 
 - name: retrieve tempest.conf locally for running the tests from your client
   fetch: src=/tmp/tempest/etc/tempest.conf dest=tempest.conf flat=yes
+
+- name: keystonerc_admin locally as well, for good measure
+  fetch: src=/root/keystonerc_admin dest=keystonerc_admin flat=yes
 
 - name: Install packages for testing with tempest
   yum: name={{ item }} state=installed

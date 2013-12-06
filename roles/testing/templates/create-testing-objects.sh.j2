@@ -57,51 +57,52 @@ echo "IMAGE2_ID: ${F19_IMAGE_ID}"
                                                                                                                                                                                                     
 id="1"
 
-    tenant="TestTenant${id}"
-    tenant_id=$( get_k_id tenant " ${tenant} " )
+tenant="test_tenant"
+tenant_id=$( get_k_id tenant " ${tenant} " )
 
-    # Create a private net and subnet                                                                                                                                                                 
-    net_id=$( get_q_id net "test-private-net-${id}" )
-    if [ -z ${net_id} ]; then
-        neutron net-create    --tenant_id $tenant_id "test-private-net-${id}"
-        net_id=$( get_q_id net "test-private-net-${id}" )
-    fi
+# Create a private net and subnet                                                                                                                                                                 
+net_id=$( get_q_id net "test_private_net" )
+if [ -z ${net_id} ]; then
+    neutron net-create    --tenant_id $tenant_id "test_private_net"
+    net_id=$( get_q_id net "test_private_net" )
+fi
 
-    subnet_id=$( get_q_id subnet "192.168.10${id}.0/24" )
-    if [ -z ${subnet_id} ]; then
-        neutron subnet-create --tenant_id $tenant_id \
-                              --ip_version 4 \
-                              --gateway "192.168.10${id}.1" \
-                              --name "test-private-subnet-${id}"  \
-                               "test-private-net-${id}" "192.168.10${id}.0/24"
-        subnet_id=$( get_q_id subnet "192.168.10${id}.0/24" )
-    fi
-
-    # Create a router and itnerface o nthe router.                                                                                                                                                    
-    router_id=$(  get_q_id router "test-router-${id}" )
-    if [ -z ${router_id} ]; then
-        neutron router-create --tenant_id $tenant_id "test-router-${id}"
-        router_id=$(  get_q_id router "test-router-${id}" )
-    fi
-    neutron router-interface-add "test-router-${id}" $subnet_id || /bin/true
-
-    # Create an external network, and configure the external network as router gw 
-    pub_net_id=$( get_q_id net "test-public-net-${id}" )
-    if [ -z ${pub_net_id} ]; then                                                                                                          
-        neutron net-create  --tenant_id $tenant_id "test-public-net-${id}" --shared -- --router:external=True
-        pub_net_id=$( get_q_id net "test-public-net-${id}" )
-    fi
-    neutron router-gateway-set "test-router-${id}" $pub_net_id || /bin/true
-
-    # Add a subnet wth external IP addresses
-    pub_subnet_id=$( get_q_id subnet "10.255.73.128/27" )
-    if [ -z ${pub_subnet_id} ]; then
-        neutron subnet-create --tenant_id $tenant_id \
+subnet_id=$( get_q_id subnet "192.168.10${id}.0/24" )
+if [ -z ${subnet_id} ]; then
+    neutron subnet-create --tenant_id $tenant_id \
                           --ip_version 4 \
-                          --allocation-pool start=10.255.73.129,end=10.255.73.254 \
-                          --gateway "10.255.73.1" \
-                          --name "test-public-subnet-${id}" \
-                          "test-public-net-${id}" "10.255.73.128/25" || /bin/true
-        pub_subnet_id=$( get_q_id subnet "10.255.73.128/25" )
-    fi
+                          --gateway "192.168.10${id}.1" \
+                          --name "test_private_subnet"  \
+                           "test_private_net" "192.168.101.0/24"
+    subnet_id=$( get_q_id subnet "192.168.101.0/24" )
+fi
+
+# Create a router and itnerface o nthe router.                                                                                                                                                    
+router_id=$(  get_q_id router "test_router" )
+if [ -z ${router_id} ]; then
+    neutron router-create --tenant_id $tenant_id "test_router"
+    router_id=$(  get_q_id router "test_router" )
+fi
+neutron router-interface-add "test_router" $subnet_id || /bin/true
+
+# Create an external network, and configure the external network as router gw 
+pub_net_id=$( get_q_id net "test_public_net" )
+if [ -z ${pub_net_id} ]; then                                                                                                          
+    neutron net-create  --tenant_id $tenant_id "test_public_net" -- --router:external=True
+    pub_net_id=$( get_q_id net "test_public_net" )
+fi
+neutron router-gateway-set "test_router" $pub_net_id || /bin/true
+
+# Add a subnet wth external IP addresses
+public_subnet_cidr="10.255.73.128/27"
+pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
+if [ -z ${pub_subnet_id} ]; then
+    neutron subnet-create --tenant_id $tenant_id \
+                      --ip_version 4 \
+                      --allocation-pool start=10.255.73.129,end=10.255.73.159 \
+                      --gateway "10.255.73.1" \
+                      --name "test_public_subnet" \
+                      "test_public_net" "${public_subnet_cidr}" || /bin/true
+    pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
+fi
 
