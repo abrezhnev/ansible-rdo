@@ -223,6 +223,12 @@ CONFIG_NOVA_COMPUTE_PRIVIF={{ compute_private_if }}
 # Number of addresses in each private subnet
 #CONFIG_NOVA_NETWORK_SIZE=255
 
+#-----------------------------
+#
+# Neutron
+#
+#-----------------------------
+
 # The IP addresses of the server on which to install the Neutron
 # server
 CONFIG_NEUTRON_SERVER_HOST={{ ip_list('openstack_neutron') }}
@@ -267,23 +273,31 @@ CONFIG_NEUTRON_OVS_VLAN_RANGES=
 
 # A comma separated list of bridge mappings for the Neutron
 # openvswitch plugin
-CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=br-tun
+#CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=br-tun
 
 # A comma separated list of colon-separated OVS bridge:interface
 # pairs. The interface will be added to the associated bridge.
-CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-int
+#CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-int
 
 # A comma separated list of tunnel ranges for the Neutron openvswitch
 # plugin
-CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:1000
+#CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:1000
 
 # Override the IP used for GRE tunnels on this hypervisor to the IP
 # found on the specified interface (defaults to the HOST IP)
 CONFIG_NEUTRON_OVS_TUNNEL_IF={{ compute_private_if }}
 
+
+
 # The IP address of the server on which to install the OpenStack
 # client packages. An admin "rc" file will also be installed
 CONFIG_OSCLIENT_HOST={{ ip_list('openstack_controller') }}
+
+#-----------------------------
+#
+# Horizon
+#
+#-----------------------------
 
 # The IP address of the server on which to install Horizon
 CONFIG_HORIZON_HOST={{ ip_list('openstack_horizon') }}
@@ -299,6 +313,8 @@ CONFIG_SSL_CERT=
 # Keyfile corresponding to the certificate if one was entered
 CONFIG_SSL_KEY=
 
+
+
 # The IP address on which to install the Swift proxy service
 # (currently only single proxy is supported)
 CONFIG_SWIFT_PROXY_HOSTS={{ ip_list('swift_proxy_nodes') }}
@@ -311,7 +327,6 @@ CONFIG_SWIFT_PROXY_HOSTS={{ ip_list('swift_proxy_nodes') }}
 # will create a loopback device for a test setup
 CONFIG_SWIFT_STORAGE_HOSTS={{ ip_list('swift_storage_nodes') }}
 
-
 # Number of swift storage zones, this number MUST be no bigger than
 # the number of storage devices configured
 CONFIG_SWIFT_STORAGE_ZONES=1
@@ -322,6 +337,7 @@ CONFIG_SWIFT_STORAGE_REPLICAS=1
 
 # FileSystem type for storage nodes
 CONFIG_SWIFT_STORAGE_FSTYPE=ext4
+
 
 # Whether to provision for demo usage and testing
 CONFIG_PROVISION_DEMO=n

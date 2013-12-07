@@ -68,6 +68,9 @@
   shell: env | grep _proxy | grep -v SUDO | sed 's/^/export /' > /etc/profile.d/proxy-env.sh
   environment: proxy_env
 
+- name: manually sync ntp
+  shell: service ntpd stop && ntpdate {{ ntp_server }} && service ntpd start
+
 - include: kernel-update.yml
 
 #- include: openvswitch-upgrade.yml

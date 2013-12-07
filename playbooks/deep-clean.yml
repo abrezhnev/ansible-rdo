@@ -31,6 +31,7 @@
        - openstack-nova-xvpvncproxy
        - neutron-dhcp-agent
        - neutron-l3-agent
+       - neutron-lbaas-agent
        - neutron-metadata-agent
        - neutron-openvswitch-agent
        - neutron-ovs-cleanup
@@ -49,15 +50,13 @@
        - openstack-swift-object-replicator
        - openstack-swift-object-updater
        - openstack-swift-proxy
-       - openvswitch  
        - mongod 
        - httpd
        - qpidd
        - memcached
        - nagios
        - tgtd
-       - libvirt-guests
-       - libvirtd
+
 
 
    - name: Remove all OpenStack packages
@@ -168,7 +167,6 @@
        - python-memcached
        - rubygem-openstack-quantum-client-doc 
        - rubygem-openstack-quantum-client 
-       - openvswitch
        - mongodb-server
        - qpid-cpp-client
        - qpid-cpp-server
@@ -326,6 +324,10 @@
        - glusterd
        - glusterfsd
 
+   - name: Clear out any remaining glusterd processes
+     shell: pkill glusterd
+     ignore_errors: yes
+
 #
 # Clean brick to be used with gluster
 #
@@ -339,6 +341,7 @@
    - name: clear out any xattributes on cany bricks if used before ...
      shell: /tmp/clear-gluster-xattr.sh /export/{{ item }}-brick
      with_items: [cinder, instances, swift]
+     ignore_errors: yes
 
    - name: unmount all xfs mounts used by gluster
      command: umount /export/{{ item }}-brick
@@ -376,6 +379,17 @@
     # LibVirt
     #------------------
 
+   - name: destroy running instances
+     shell: virsh list  | grep "^[0-9]" | awk '{print $1}' | xargs -ixxx virsh destroy  xxx
+     ignore_errors: yes
+
+   - name: Shutdown all OpenStack services     
+     service: name={{ item }} state=stopped
+     ignore_errors: yes
+     with_items:
+       - libvirt-guests
+       - libvirtd
+
    - name: Remove all libvirt packages
      yum: name={{ item }} state=removed
      ignore_errors: yes
@@ -389,3 +403,72 @@
       - /var/lib/libvirt 
       - /var/log/libvirt
 
+   #-------------------------
+   # OpenVSwitch & Bridging
+   #-------------------------
+
+   - name: clear out OpenVSwitch ports
+     shell: ovs-vsctl list-ports {{ item }} | xargs -ixxx ovs-vsctl del-port {{ item }} xxx
+     ignore_errors: yes 
+     with_items:
+      - br-ex
+      - br-int
+      - br-tun
+     tags: debug
+
+   - name: clear out OpenVSwitch bridges
+     shell: ovs-vsctl del-br {{ item }}
+     ignore_errors: yes 
+     with_items:
+      - br-ex
+      - br-int
+      - br-tun
+      - undef
+     tags: debug
+
+   - name: remove any generated linux-bridge interfaces
+     shell: >
+              BS=$(brctl show | grep qbr | awk '{print $1}' );  
+              for B in $BS; do  
+                IS=$( brctl show $B | awk '{print $4}' | grep qvb );
+                for I in $IS; do brctl delif $B $IF; done
+                ifconfig $B down; 
+                brctl delbr $B; 
+              done
+     tags: debug
+
+   - name: remove any generated interfaces reported by ifconfig
+     shell: ifconfig | grep "^q" | awk '{print $1}' | xargs -ixxx ifconfig xxx down 
+
+   - name: remove any errant processes
+     shell: pkill {{ item }}
+     with_items:
+      - dnsmasq
+     ignore_errors: yes      
+     tags: debug
+
+   - name: shutdown OpenVSwitch
+     service: name=openvswitch state=stopped
+
+   - name: remove openvswitch
+     yum: name=openvswitch state=absent
+
+   - name: Clear out openvswitch data and logs
+     file: path={{ item }} state=absent
+     ignore_errors: yes
+     with_items:
+      - /etc/openvswitch
+      - /var/lib/openvswitch
+      - /var/log/openvswitch
+
+   - name: remove neutron-related kernel modules 
+     shell: modprobe -r {{ item }}
+     with_items:
+      - openvswitch
+      - vxlan
+      - vhost_net
+     ignore_errors: yes      
+     tags: debug
+
+   - name: restart iptables
+     service: name=iptables state=restarted
