@@ -2,13 +2,13 @@
 
 function get_k_id 
 {
-   RETVAL=$( keystone ${1}-list | grep ${2} | awk '{print $2}' )
+   RETVAL=$( keystone ${1}-list | grep "${2}" | awk '{print $2}' )
    echo $RETVAL
 }
 
 function get_q_id 
 {
-   RETVAL=$( neutron ${1}-list | grep ${2} | awk '{print $2}' )
+   RETVAL=$( neutron ${1}-list | grep "${2}" | awk '{print $2}' )
    echo $RETVAL
 }
 
@@ -23,7 +23,7 @@ if ! [ -r /tmp/cirros-0.3.1-x86_64-disk.img ]; then
 	wget http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img 
 fi
 
-CIRROS_IMAGE_ID=$( glance index | grep cirros-0.3.1 | awk '{ print $1}' )
+CIRROS_IMAGE_ID=$( glance index | grep testing-cirros-0.3.1 | awk '{ print $1}' )
 
 if [ -z ${CIRROS_IMAGE_ID} ]; then
 	IMAGE_INFO=$( glance image-create --name testing-cirros-0.3.1 --is-public True --disk-format qcow2 --container-format bare --file cirros-0.3.1-x86_64-disk.img )
@@ -41,7 +41,7 @@ if ! [ -r /tmp/Fedora-x86_64-19-20130627-sda.qcow2 ]; then
 	wget http://download.fedoraproject.org/pub/fedora/linux/releases/19/Images/x86_64/Fedora-x86_64-19-20130627-sda.qcow2
 fi
 
-F19_IMAGE_ID=$( glance index | grep Fedora19 | awk '{ print $1}' )
+F19_IMAGE_ID=$( glance index | grep testing-Fedora19 | awk '{ print $1}' )
 
 if [ -z ${F19_IMAGE_ID} ]; then
 	IMAGE_INFO=$( glance image-create --name testing-Fedora19 --is-public True --disk-format qcow2 --container-format bare --file Fedora-x86_64-19-20130627-sda.qcow2 )
@@ -60,10 +60,10 @@ id="1"
 tenant="test_tenant"
 tenant_id=$( get_k_id tenant " ${tenant} " )
 
-# Create a private net and subnet                                                                                                                                                                 
+# Create a private net and subnet
 net_id=$( get_q_id net "test_private_net" )
 if [ -z ${net_id} ]; then
-    neutron net-create    --tenant_id $tenant_id "test_private_net"
+    neutron net-create  --tenant_id $tenant_id "test_private_net"
     net_id=$( get_q_id net "test_private_net" )
 fi
 
@@ -91,7 +91,6 @@ if [ -z ${pub_net_id} ]; then
     neutron net-create  --tenant_id $tenant_id "test_public_net" -- --router:external=True
     pub_net_id=$( get_q_id net "test_public_net" )
 fi
-neutron router-gateway-set "test_router" $pub_net_id || /bin/true
 
 # Add a subnet wth external IP addresses
 public_subnet_cidr="10.255.73.128/27"
@@ -99,10 +98,11 @@ pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
 if [ -z ${pub_subnet_id} ]; then
     neutron subnet-create --tenant_id $tenant_id \
                       --ip_version 4 \
-                      --allocation-pool start=10.255.73.129,end=10.255.73.159 \
+                      --allocation-pool start=10.255.73.129,end=10.255.73.158 \
                       --gateway "10.255.73.1" \
                       --name "test_public_subnet" \
                       "test_public_net" "${public_subnet_cidr}" || /bin/true
     pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
 fi
 
+neutron router-gateway-set "test_router" $pub_net_id || /bin/true
