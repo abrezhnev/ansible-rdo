@@ -113,7 +113,7 @@ function openstack_purge_subnets()
 function openstack_purge_nets()
 {
     SEARCH_STRING="${1: }"
-    NETS=$( neutron net-list -c id -c name | egrep -v '\-\-\-\-|id' | grep "${SEARCH_STRING}" | awk '{print $2}'` )
+    NETS=$( neutron net-list -c id -c name | egrep -v '\-\-\-\-|id' | grep "${SEARCH_STRING}" | awk '{print $2}' )
     for net in $NETS
     do
         neutron net-delete ${net}
