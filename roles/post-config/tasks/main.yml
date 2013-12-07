@@ -4,7 +4,7 @@
 - name: make a link for quantum to neutron
   file: src=/usr/bin/neutron dest=/usr/bin/quantum state=link
 
-- name: copy over a set of cleanup functions to clear out testing and other objects
+- name: copy over a set of test cleanup functions 
   copy: src=cleanup_functions.sh dest=/root/cleanup_functions.sh mode=0664
 
 - name: copy over a testing cleanup scripts
@@ -17,4 +17,4 @@
 
 - name: Now run post-config scripts
   shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
-
+  ignore_errors: yes
