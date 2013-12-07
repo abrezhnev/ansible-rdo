@@ -10,8 +10,8 @@ ntp_server: time.harvard.edu
 #
 
 # lvm or gluster or nfs
-#cinder_backend: gluster
-cinder_backend: lvm
+cinder_backend: gluster
+#cinder_backend: lvm
 
 cinder_volume_size: 100G
 
