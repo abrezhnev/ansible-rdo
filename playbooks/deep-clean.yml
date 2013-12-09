@@ -349,8 +349,8 @@
      ignore_errors: yes
 
    - name: remove loopback devices
-     shell: losetup -d /dev/{{ item }}
-     with_items: [ loop1, loop2, loop3 ]
+     shell: "DEV=$( losetup -a | grep {{ item }} | awk -F: '{print $1}')  losetup -d $DEV"
+     with_items: [cinder, instances, swift]
      ignore_errors: yes
 
    - name: Remove all gluster packages

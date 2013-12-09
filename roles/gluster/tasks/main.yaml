@@ -52,23 +52,23 @@
 # The following should really be a loopback module.
 
 - name: deattach associated loop device
-  shell: losetup -d /dev/{{ item }}
+  shell: "DEV=$( losetup -a | grep {{ item }} | tail -1 | awk -F: '{print $1}') && losetup -d $DEV"   
   when: make_gluster_loopback_brick
-  with_items: [ loop1 loop2 loop3 ]
+  with_items:  [cinder, instances, swift]
   ignore_errors: yes
 
 - name: create a loopback device for cinder
-  shell: losetup /dev/loop1 {{ loopbacks_dir }}/cinder-block
+  shell: losetup -f {{ loopbacks_dir }}/cinder-block
   when: make_gluster_loopback_brick
   ignore_errors: yes
 
 - name: create a loopback device for the instance dir
-  shell: losetup /dev/loop2 {{ loopbacks_dir }}/instances-block
+  shell: losetup -f {{ loopbacks_dir }}/instances-block
   when: make_gluster_loopback_brick
   ignore_errors: yes
 
 - name: create a loopback device for the swift storage block
-  shell: losetup /dev/loop3 {{ loopbacks_dir }}/swift-block
+  shell: losetup -f {{ loopbacks_dir }}/swift-block
   when: make_gluster_loopback_brick
   ignore_errors: yes
 
@@ -80,8 +80,8 @@
   yum: name=xfsprogs state=installed
 
 - name: setup brick FS for gluster (will fail if already formatted)
-  shell: mkfs.xfs -f -i size=512 /dev/{{ item }}
-  with_items: [ loop1, loop2, loop3 ]
+  shell: "DEV=$( losetup -a | grep {{ item }} | tail -1 | awk -F: '{print $1}') && mkfs.xfs -f -i size=512 $DEV"
+  with_items:  [cinder, instances, swift]
   ignore_errors: yes
   tags:
     - brick
@@ -91,22 +91,34 @@
   with_items: 
     - ${brick_mount_cinder}
     - ${brick_mount_instances}
-    - ${brick_mount_swift} 
+    - ${brick_mount_swift}
   tags:
     - brick
+
+- name: read loopback dev for cinder block file
+  shell: "losetup -a | grep cinder| tail -1 | awk -F: '{print $1}'"
+  register: loopdev
 
 - name: create mount entry for the new cinder brick, and mount
-  mount: name={{ brick_mount_cinder }}    src=/dev/loop1 fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_cinder }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
+
+- name: read loopback dev for cinder block file
+  shell: "losetup -a | grep instances | tail -1 | awk -F: '{print $1}'"
+  register: loopdev
 
 - name: create mount entry for the new instances brick, and mount
-  mount: name={{ brick_mount_instances }} src=/dev/loop2 fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_instances }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
 
+- name: read loopback dev for cinder block file
+  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
+  register: loopdev
+
 - name: create mount entry for the new swift brick, and mount
-  mount: name={{ brick_mount_swift }}     src=/dev/loop3 fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
 
