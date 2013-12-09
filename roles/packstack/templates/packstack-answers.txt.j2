@@ -274,14 +274,17 @@ CONFIG_NEUTRON_OVS_VLAN_RANGES=
 # A comma separated list of bridge mappings for the Neutron
 # openvswitch plugin
 #CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=br-tun
+CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=
 
 # A comma separated list of colon-separated OVS bridge:interface
 # pairs. The interface will be added to the associated bridge.
 #CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-int
+CONFIG_NEUTRON_OVS_BRIDGE_IFACES=
 
 # A comma separated list of tunnel ranges for the Neutron openvswitch
 # plugin
 #CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:1000
+CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:4000
 
 # Override the IP used for GRE tunnels on this hypervisor to the IP
 # found on the specified interface (defaults to the HOST IP)
