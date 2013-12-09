@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ~/clenaup_functions.sh 
+. ~/cleanup_functions.sh 
 
 openstack_purge_routers "[0-9]\-router"
 openstack_purge_ports
