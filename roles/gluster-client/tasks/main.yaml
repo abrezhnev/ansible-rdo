@@ -12,3 +12,12 @@
   shell: mount -t glusterfs ${ansible_eth0.ipv4.address}:{{ item }} /mnt/gv-{{ item }}
   with_items: [cinder, instances, swift]
   tags: gluster_volume
+
+- name: clear out any old nova instances data dir
+  file: path=/var/lib/nova/instances state=absent
+
+- name: create a /var/lib/nova directory
+  file: path=/var/lib/nova state=directory
+
+- name: use gluster for nova instances directory
+  file: dest=/var/lib/nova/instances src=/mnt/gv-instances state=link
