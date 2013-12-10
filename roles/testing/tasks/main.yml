@@ -91,6 +91,7 @@
   git: repo=https://github.com/openstack/tempest.git
        dest=/tmp/tempest
        version=stable/havana
+  environment: proxy_env
 
 - name: setup a tempest test config
   template: src=tempest.conf.j2 dest=/tmp/tempest/etc/tempest.conf

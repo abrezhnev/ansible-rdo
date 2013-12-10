@@ -77,7 +77,7 @@ if [ -z ${subnet_id} ]; then
     subnet_id=$( get_q_id subnet "192.168.101.0/24" )
 fi
 
-# Create a router and itnerface o nthe router.                                                                                                                                                    
+# Create a router and interface on the router.
 router_id=$(  get_q_id router "test_router" )
 if [ -z ${router_id} ]; then
     neutron router-create --tenant_id $tenant_id "test_router"
@@ -85,24 +85,8 @@ if [ -z ${router_id} ]; then
 fi
 neutron router-interface-add "test_router" $subnet_id || /bin/true
 
-# Create an external network, and configure the external network as router gw 
-pub_net_id=$( get_q_id net "test_public_net" )
-if [ -z ${pub_net_id} ]; then                                                                                                          
-    neutron net-create  --tenant_id $tenant_id "test_public_net" -- --router:external=True
-    pub_net_id=$( get_q_id net "test_public_net" )
+# Get public net and configure the external network as router gw 
+pub_net_id=$( get_q_id net " public " )
+if [ -n ${pub_net_id} ]; then 
+    neutron router-gateway-set "test_router" $pub_net_id || /bin/true
 fi
-
-# Add a subnet wth external IP addresses
-public_subnet_cidr="10.255.73.128/27"
-pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
-if [ -z ${pub_subnet_id} ]; then
-    neutron subnet-create --tenant_id $tenant_id \
-                      --ip_version 4 \
-                      --allocation-pool start=10.255.73.129,end=10.255.73.158 \
-                      --gateway "10.255.73.1" \
-                      --name "test_public_subnet" \
-                      "test_public_net" "${public_subnet_cidr}" || /bin/true
-    pub_subnet_id=$( get_q_id subnet ${public_subnet_cidr} )
-fi
-
-neutron router-gateway-set "test_router" $pub_net_id || /bin/true
