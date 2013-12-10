@@ -44,7 +44,7 @@
 - name: Retrieve the installed credentials for admin
   fetch: src=keystonerc_admin dest=keystonerc_admin flat=yes
 
-- name: INstall some extra OpenStack bit and pieces
+- name: Install some extra OpenStack bit and pieces
   yum: name={{ item }} state=present
   environment: proxy_env
   with_items:
