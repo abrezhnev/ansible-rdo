@@ -10,11 +10,17 @@
 - name: copy over a testing cleanup scripts
   copy: src=cleanup_tempest_objects.sh dest=/root/cleanup_tempest_objects.sh mode=0775
 
+- name: create a script for some basic admin objects
+  template: src=create_admin_objects.sh.j2 dest=/root/create_admin_objects.sh mode=0775
+
+- name: create these basic objects for admin
+  shell: source /root/keystonerc_admin && /root/create_admin_objects.sh
+
 #- include: images.yml
 
 - name: check out some post-config action for Openstack
   git: repo=https://github.com/robparrott/openstack-post-config.git dest=/tmp/openstack-post-config
 
-- name: Now run post-config scripts
-  shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
-  ignore_errors: yes
+#- name: Now run post-config scripts
+#  shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
+#  ignore_errors: yes
