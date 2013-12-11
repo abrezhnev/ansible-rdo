@@ -209,6 +209,7 @@
       - /var/log/neutron
       - /var/log/swift
       - /var/log/ceilometer
+      - /srv/loopback-device
 
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
@@ -250,6 +251,7 @@
       - keystone
       - cinder
       - glance
+      - savanna
 
    - name: remove associated groupses
      group: name={{ item }} state=absent
@@ -263,7 +265,10 @@
       - keystone
       - cinder
       - glance
+      - savanna
 
+  - name: unmount swift loopback devices
+    shell: df -h | grep "/srv/loopback-device/device" | awk '{print $1}' | xargs -ixxx umount xxx
 
    #----------------
    # MySQL
@@ -324,6 +329,14 @@
        - glusterd
        - glusterfsd
 
+   - name: Clear out any remaining gluster processes
+     shell: pkill glusterfsd
+     ignore_errors: yes
+
+   - name: Clear out any remaining glusterfs processes
+     shell: pkill glusterfs
+     ignore_errors: yes
+
    - name: Clear out any remaining glusterd processes
      shell: pkill glusterd
      ignore_errors: yes
@@ -348,9 +361,8 @@
      with_items: [cinder, instances, swift]
      ignore_errors: yes
 
-   - name: remove loopback devices
-     shell: "DEV=$( losetup -a | grep {{ item }} | awk -F: '{print $1}')  losetup -d $DEV"
-     with_items: [cinder, instances, swift]
+   - name: remove all loopback devices not mounted
+     shell: "losetup -a | awk -F: '{print $1}' | xargs -ixxx losetup -d xxx "
      ignore_errors: yes
 
    - name: Remove all gluster packages
@@ -449,6 +461,7 @@
 
    - name: shutdown OpenVSwitch
      service: name=openvswitch state=stopped
+     ignore_errors: yes   
 
    - name: remove openvswitch
      yum: name=openvswitch state=absent
@@ -472,3 +485,10 @@
 
    - name: restart iptables
      service: name=iptables state=restarted
+
+     #
+     # Finally last ditch killing of offending processes
+     #
+
+   - name: rKill off errant process
+     shell: pkill glusterfs qemu-kvm dnsmasq
