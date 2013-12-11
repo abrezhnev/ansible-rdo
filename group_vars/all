@@ -34,3 +34,8 @@ brick_mount_instances: /export/instances-brick
 brick_mount_swift: /export/swift-brick
 gluster_volume_name: gv0
 #gluster_vol_options: replica 2
+
+#
+# Swift
+#
+swift_volume_size: 10G
