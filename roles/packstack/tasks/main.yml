@@ -35,6 +35,12 @@
 - name: setup ssh keys for root
   shell: cd /root/.ssh && rm -f id_rsa* && ssh-keygen -f id_rsa -t rsa -N '' && cat id_rsa.pub >> authorized_keys
 
+- name: ensure there's a directory for loopback devices
+  file: path={{ loopbacks_dir }} state=directory
+
+- name: get swift to use that loopback directory
+  file: src={{ loopbacks_dir }} dest=/srv/loopback-device state=link
+
 - name: Now run packstack ...
   shell: /usr/bin/packstack --answer-file=/tmp/packstack-answers.txt >> /tmp/packstack.log
   environment: proxy_env
@@ -49,7 +55,8 @@
   environment: proxy_env
   with_items:
    - openstack-neutron-vpn-agent
+   - openstack-savanna
 
 - name: Fix permissions for cinder if using a gluster mount
-  shell: [ -d /mnt/gv-cinder ] && chown -R cinder.cinder /mnt/gv-cinder
+  shell: "[ -d /mnt/gv-cinder ] && chown -R cinder.cinder /mnt/gv-cinder"
   ignore_errors: yes
