@@ -57,7 +57,7 @@ CONFIG_HORIZON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=n
+CONFIG_SWIFT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
@@ -72,7 +72,7 @@ CONFIG_CLIENT_INSTALL=y
 
 # Comma separated list of NTP servers. Leave plain if Packstack
 # should not install ntpd on instances.
-CONFIG_NTP_SERVERS=
+CONFIG_NTP_SERVERS={{ ntp_server }}
 
 # Set to 'y' if you would like Packstack to install Nagios to monitor
 # openstack hosts
@@ -84,6 +84,12 @@ CONFIG_NAGIOS_INSTALL=y
 # you don't need to exclude any server.
 EXCLUDE_SERVERS=
 
+#-----------------------------
+#
+# MySQL
+#
+#-----------------------------
+
 # The IP address of the server on which to install MySQL
 CONFIG_MYSQL_HOST={{ ip_list('openstack_controller') }}
 
@@ -91,6 +97,11 @@ CONFIG_MYSQL_HOST={{ ip_list('openstack_controller') }}
 CONFIG_MYSQL_USER=root
 
 
+#-----------------------------
+#
+# Qpid
+#
+#-----------------------------
 
 # The IP address of the server on which to install the QPID service
 CONFIG_QPID_HOST={{ ip_list('openstack_controller') }}
@@ -116,14 +127,35 @@ CONFIG_QPID_SSL_PORT=5671
 #CONFIG_QPID_SSL_SELF_SIGNED=y
 
 
+#-----------------------------
+#
+# Keystone
+#
+#-----------------------------
+
+
 # The IP address of the server on which to install Keystone
 CONFIG_KEYSTONE_HOST={{ ip_list('openstack_keystone') }}
 
 # Kestone token format. Use either UUID or PKI
 CONFIG_KEYSTONE_TOKEN_FORMAT=PKI
 
+
+#-----------------------------
+#
+# Glance
+#
+#-----------------------------
+
 # The IP address of the server on which to install Glance
 CONFIG_GLANCE_HOST={{ ip_list('openstack_glance') }}
+
+
+#-----------------------------
+#
+# Cinder
+#
+#-----------------------------
 
 # The IP address of the server on which to install Cinder
 CONFIG_CINDER_HOST={{ ip_list('openstack_cinder') }}
@@ -153,6 +185,13 @@ CONFIG_CINDER_GLUSTER_MOUNTS={{ gluster_mnt_list('gluster_nodes', mntpnt) }}
 # A single or comma seprated list of NFS exports to mount, eg: ip-
 # address:/export-name
 CONFIG_CINDER_NFS_MOUNTS={{ ip_list('nfs_nodes') }}
+
+
+#-----------------------------
+#
+# Nova
+#
+#-----------------------------
 
 # The IP address of the server on which to install the Nova API
 # service
@@ -223,6 +262,7 @@ CONFIG_NOVA_COMPUTE_PRIVIF={{ compute_private_if }}
 # Number of addresses in each private subnet
 #CONFIG_NOVA_NETWORK_SIZE=255
 
+
 #-----------------------------
 #
 # Neutron
@@ -291,11 +331,6 @@ CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:4000
 CONFIG_NEUTRON_OVS_TUNNEL_IF={{ compute_private_if }}
 
 
-
-# The IP address of the server on which to install the OpenStack
-# client packages. An admin "rc" file will also be installed
-CONFIG_OSCLIENT_HOST={{ ip_list('openstack_controller') }}
-
 #-----------------------------
 #
 # Horizon
@@ -317,6 +352,11 @@ CONFIG_SSL_CERT=
 CONFIG_SSL_KEY=
 
 
+#-----------------------------
+#
+# Swift
+#
+#-----------------------------
 
 # The IP address on which to install the Swift proxy service
 # (currently only single proxy is supported)
@@ -332,34 +372,23 @@ CONFIG_SWIFT_STORAGE_HOSTS={{ ip_list('swift_storage_nodes') }}
 
 # Number of swift storage zones, this number MUST be no bigger than
 # the number of storage devices configured
-CONFIG_SWIFT_STORAGE_ZONES=1
+CONFIG_SWIFT_STORAGE_ZONES=2
 
 # Number of swift storage replicas, this number MUST be no bigger
 # than the number of storage zones configured
-CONFIG_SWIFT_STORAGE_REPLICAS=1
+CONFIG_SWIFT_STORAGE_REPLICAS=2
 
 # FileSystem type for storage nodes
 CONFIG_SWIFT_STORAGE_FSTYPE=ext4
 
+CONFIG_SWIFT_STORAGE_SIZE={{ swift_volume_size }}
 
-# Whether to provision for demo usage and testing
-CONFIG_PROVISION_DEMO=n
 
-# The CIDR network address for the floating IP subnet
-CONFIG_PROVISION_DEMO_FLOATRANGE=172.24.4.224/28
-
-# Whether to configure tempest for testing
-CONFIG_PROVISION_TEMPEST=y
-
-# The uri of the tempest git repository to use
-CONFIG_PROVISION_TEMPEST_REPO_URI=https://github.com/redhat-openstack/tempest.git
-
-# The revision of the tempest git repository to use
-CONFIG_PROVISION_TEMPEST_REPO_REVISION=master
-
-# Whether to configure the ovs external bridge in an all-in-one
-# deployment
-CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE=n
+#-----------------------------
+#
+# Heat
+#
+#-----------------------------
 
 # The IP address of the server on which to install Heat service
 CONFIG_HEAT_HOST={{ ip_list('openstack_heat') }}
@@ -380,8 +409,46 @@ CONFIG_HEAT_CLOUDWATCH_HOST={{ ip_list('openstack_heat') }}
 # CloudFormation API service
 CONFIG_HEAT_CFN_HOST={{ ip_list('openstack_heat') }}
 
+
+#-----------------------------
+#
+# Ceilometer
+#
+#-----------------------------
+
 # The IP address of the server on which to install Ceilometer
 CONFIG_CEILOMETER_HOST={{ ip_list('openstack_heat') }}
+
+
+#-----------------------------
+#
+# Miscellaneous
+#
+#-----------------------------
+
+# The IP address of the server on which to install the OpenStack
+# client packages. An admin "rc" file will also be installed
+CONFIG_OSCLIENT_HOST={{ ip_list('openstack_controller') }}
+
+# Whether to provision for demo usage and testing
+CONFIG_PROVISION_DEMO=n
+
+# The CIDR network address for the floating IP subnet
+CONFIG_PROVISION_DEMO_FLOATRANGE=172.24.4.224/28
+
+# Whether to configure tempest for testing
+CONFIG_PROVISION_TEMPEST=y
+
+# The uri of the tempest git repository to use
+CONFIG_PROVISION_TEMPEST_REPO_URI=https://github.com/redhat-openstack/tempest.git
+
+# The revision of the tempest git repository to use
+CONFIG_PROVISION_TEMPEST_REPO_REVISION=master
+
+# Whether to configure the ovs external bridge in an all-in-one
+# deployment
+CONFIG_PROVISION_ALL_IN_ONE_OVS_BRIDGE=n
+
 
 # To subscribe each server to EPEL enter "y"
 CONFIG_USE_EPEL=n
@@ -394,9 +461,11 @@ CONFIG_REPO=
 CONFIG_NAGIOS_HOST={{ ip_list('openstack_heat') }}
 
 
+#-----------------------------
 #
 # RHEL-specific stuff
 #
+#-----------------------------
 
 # To subscribe each server with Red Hat subscription manager, include
 # this with CONFIG_RH_PW
