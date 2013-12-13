@@ -57,7 +57,7 @@ CONFIG_HORIZON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=y
+CONFIG_SWIFT_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
@@ -290,7 +290,7 @@ CONFIG_NEUTRON_L2_PLUGIN=openvswitch
 
 # A comma separated list of IP addresses on which to install Neutron
 # metadata agent
-CONFIG_NEUTRON_METADATA_HOSTS={{ ip_list('openstack_neutron') }}
+CONFIG_NEUTRON_METADATA_HOSTS={{ ip_list('openstack_neutron_meta') }}
 
 # The type of network to allocate for tenant networks or the Neutron linuxbridge
 # plugin
