@@ -10,8 +10,8 @@ ntp_server: time.harvard.edu
 #
 
 # lvm or gluster or nfs
-cinder_backend: gluster
-#cinder_backend: lvm
+#cinder_backend: gluster
+cinder_backend: lvm
 
 cinder_volume_size: 100G
 
@@ -29,6 +29,14 @@ iface: eth0
 #
 # Gluster vars
 #
+do_gluster: False
+make_gluster_loopback_brick: true
+
+loopbacks_dir: /home/loopbacks
+
+gluster_brick_size: 200
+#gluster_vol_device: loop1
+
 brick_mount_cinder: /export/cinder-brick
 brick_mount_instances: /export/instances-brick
 brick_mount_swift: /export/swift-brick

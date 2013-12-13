@@ -7,21 +7,28 @@ proxy_env:
   https_proxy: http://iliadsocks.rc.fas.harvard.edu:8888
   no_proxy:    127.0.0.1,localhost,rc.fas.harvard.edu,10.242.108.8,10.242.108.9,10.242.108.10,10.242.108.11
       
-#Neutron/Quantum vars for FAS hosts
 
+#
+# Neutron/Quantum vars for FAS hosts
+#
 compute_private_if: eth0              # Interface that compute hosts will use for VM traffic
 network_private_if: eth0              # Interface that network hosts will use for VM traffic
 
-public_if: eth0
+gateway_if:      eth0
+gateway_vlan:    3294
+#gateway_cide:    10.255.75.0/24
+#gateway_net:     10.255.75.0
+#gateway_netmask: 255.255.255.0
+#gateway_ip:      10.255.75.2
+#gateway:         10.255.75.1
+
+floating_ip_start: 10.255.75.3
+floating_ip_end:   10.255.75.254
 
 iface: eth0
 
+
+#
 # Gluster and related vars for FASRC hosts
+#
 loopbacks_dir: /var/lib/loopbacks
-
-make_gluster_loopback_brick: true
-gluster_brick_size: 5
-gluster_vol_device: loop1
-
-
-
