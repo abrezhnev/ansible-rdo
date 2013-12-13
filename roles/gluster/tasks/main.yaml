@@ -91,7 +91,7 @@
   with_items: 
     - ${brick_mount_cinder}
     - ${brick_mount_instances}
-    - ${brick_mount_swift}
+#    - ${brick_mount_swift}
   tags:
     - brick
 
@@ -113,47 +113,14 @@
   tags:
     - brick
 
-- name: read loopback dev for swift block file
-  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
-  register: loopdev
+#- name: read loopback dev for swift block file
+#  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
+#  register: loopdev
 
-- name: create mount entry for the new swift brick, and mount
-  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
-  tags:
-    - brick
+#- name: create mount entry for the new swift brick, and mount
+#  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+#  tags:
+#    - brick
 
-#--------------------
-# SELiux & firewall
-#--------------------
-
-- name: disable SELinux
-  action: selinux policy=targeted state=permissive
-
-#
-#  Firewall for gluster on RH-like
-#    http://gluster.org/community/documentation/index.php/Gluster_3.1:_Installing_GlusterFS_on_Red_Hat_Package_Manager_(RPM)_Distributions
-# 
-#
-# EC2 Security group settings ...
-#
-#TCP       22        0.0.0.0/0 
-#TCP 24000 - 24100  10.0.0.0/8 
-#TCP      111       10.0.0.0/8  
-#UDP      111       10.0.0.0/8  
-#TCP 38465 - 38485  10.0.0.0/8  
-
-# $ iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 24000:24100 -j ACCEPT 
-# $ iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 111         -j ACCEPT 
-# $ iptables -A INPUT -m state --state NEW -m udp -p udp --dport 111 -j ACCEPT 
-# $ iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 38465:38485 -j ACCEPT
-# $ service iptables save
-# $ service iptables restart
-# 
-
-#- name: modify local firewall settings for gluster
-#  action: copy src=gluster/files/iptables-gluster dest=/etc/sysconfig/iptables owner=root group=root mode=644 backup=yes
-
-#- name: restart local firewall for gluster
-#  action: service name=iptables state=restarted
 
 
