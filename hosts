@@ -40,6 +40,9 @@ ospoc4.lab.noc.harvard.edu
 [openstack_neutron_dhcp]
 ospoc4.lab.noc.harvard.edu
 
+[openstack_neutron_meta]
+ospoc4.lab.noc.harvard.edu
+
 [openstack_horizon]
 ospoc3.lab.noc.harvard.edu
 
@@ -57,8 +60,8 @@ ospoc5.lab.noc.harvard.edu
 ospoc6.lab.noc.harvard.edu
 
 [swift_storage_nodes]
-ospoc3.lab.noc.harvard.edu
-ospoc4.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
+ospoc6.lab.noc.harvard.edu
 
 [gluster_master]
 ospoc3.lab.noc.harvard.edu
