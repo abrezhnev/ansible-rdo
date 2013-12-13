@@ -1,0 +1,30 @@
+---
+
+#
+# Enable extra network services in web GUI
+#
+#    'enable_lb': True,
+#    'enable_firewall': True,
+#    'enable_quotas': True,
+
+- name: enable LBaaS GUI elements
+  lineinfile: state=present
+              dest=/etc/openstack-dashboard/local_settings
+              line="    'enable_lb': True,"
+              regexp="enable_lb"
+
+- name: enable FWaaS GUI elements
+  lineinfile: state=present
+              dest=/etc/openstack-dashboard/local_settings
+              line="    'enable_firewall': True,"
+              regexp="enable_firewall"
+
+- name: enable VPNaaS GUI elements
+  lineinfile: state=present
+              dest=/etc/openstack-dashboard/local_settings
+              line="    'enable_vpn': True,"
+              regexp="enable_vpn"
+
+
+- name: restart horizon
+  service: name=httpd state=restarted

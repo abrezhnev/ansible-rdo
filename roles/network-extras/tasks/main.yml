@@ -1,0 +1,55 @@
+---
+
+#
+# Setup LBaaS
+#
+
+- name: installed LBaaS required packages
+  yum: name={{ item }} state=installed
+  with_items: [haproxy]
+
+- name: write a LBaaS agent config file
+  template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=neutron mode=0664
+
+- name: change neutron to use this service
+  ini_file: dest=/etc/neutron/neutron.conf 
+            section=DEFAULT
+            option=service_plugins
+            value=neutron.services.loadbalancer.plugin.LoadBalancerPlugin
+            backup=yes
+
+- name: restart neutron
+  service: name=neutron-server state=restarted
+
+
+- name: start the LBaaS agent
+  service: name=neutron-lbaas-agent state=restarted
+
+#
+# Setup FWaaS
+#
+
+
+- name: copy fw config
+  copy: src=fwaas_driver.ini dest=/etc/neutron/fwaas_driver.ini owner=neutron group=neutron
+
+- name: restart L3 agent
+  service: name=neutron-l3-agent state=restarted
+
+#
+# Setup VPNaaS
+#
+
+- name: installed VPN required packages
+  yum: name={{ item }} state=installed
+  with_items: [openstack-neutron-vpn-agent, openvpn, stonevpn, openswan]
+
+- name: copy vpn config
+  copy: src=vpn_agent.ini dest=/etc/neutron/vpn_agent.ini owner=neutron group=neutron
+
+- name: copy vpnaas filters for neutron-rootwrap (this is a fix) 
+  copy: src=vpnaas.filters dest=/usr/share/neutron/rootwrap/vpnaas.filters owner=root group=root
+
+- name: restart VPN agent
+  service: name=neutron-vpn-agent state=restarted
+

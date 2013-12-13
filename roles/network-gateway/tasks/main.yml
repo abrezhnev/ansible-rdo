@@ -1,0 +1,19 @@
+---
+
+#
+# Connect up the OVS structure to an external gateway interface
+#
+
+- name: create a network config for the gateway interface
+  template: src=ifcfg-ethX.XXX.j2 dest=/etc/sysconfig/network-scripts/ifcfg-{{ gateway_if }}.{{ gateway_vlan }} mode=0664
+
+- name: bring up that interface
+  shell: ifup   {{ gateway_if }}.{{ gateway_vlan }}
+
+- name: de-attach to the br-ex bridge using OVS
+  shell: ovs-vsctl delete-port br-ex {{ gateway_if }}.{{ gateway_vlan }}
+  ignore_errors: yes
+
+- name: attach to the br-ex bridge using OVS
+  shell: ovs-vsctl add-port br-ex {{ gateway_if }}.{{ gateway_vlan }}
+

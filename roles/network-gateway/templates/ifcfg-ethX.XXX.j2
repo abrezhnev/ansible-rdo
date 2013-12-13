@@ -1,0 +1,11 @@
+DEVICE={{ gateway_if }}.{{ gateway_vlan }}
+#BOOTPROTO=none
+ONBOOT=yes
+IPADDR={{ gateway_ip }}
+NETMASK={{ gateway_netmask }}
+USERCTL=no
+NETWORK={{ gateway_net }}
+VLAN=yes
+TYPE=OVSPort
+DEVICETYPE=ovs
+OVS_BRIDGE=br-ex
