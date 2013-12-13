@@ -6,11 +6,11 @@
 
 - hosts: all
   tasks:
- 
+
    #----------------
    # OpenStack
    #----------------
- 
+
    - name: Shutdown all OpenStack services     
      service: name={{ item }} state=stopped
      ignore_errors: yes
@@ -213,6 +213,7 @@
 
    - name: Install package that the followiing needs on target hosts
      yum: name=MySQL-python state=present
+     ignore_errors: yes
 
    - name: Remove all the MySQL databases
      mysql_db: name={{ item }} state=absent
@@ -267,8 +268,8 @@
       - glance
       - savanna
 
-  - name: unmount swift loopback devices
-    shell: df -h | grep "/srv/loopback-device/device" | awk '{print $1}' | xargs -ixxx umount xxx
+   - name: unmount swift loopback devices
+     shell: df -h | grep "/srv/loopback-device/device" | awk '{print $1}' | xargs -ixxx umount xxx
 
    #----------------
    # MySQL
@@ -490,5 +491,7 @@
      # Finally last ditch killing of offending processes
      #
 
-   - name: rKill off errant process
-     shell: pkill glusterfs qemu-kvm dnsmasq
+   - name: Kill off errant process
+     shell: pkill {{ item }}
+     with_items: [glusterfs, qemu-kvm, dnsmasq]
+     ignore_errors: yes 
