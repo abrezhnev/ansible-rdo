@@ -105,7 +105,7 @@ neutron router-interface-add "${ROUTER}" ${subnet_id2} || /bin/true
 #  and configure the external network as router gw 
 #
 PUBNET=public
-CIDR="10.255.75.0/24"
+CIDR="{{ gateway_cidr }}"
 pub_net_id=$( get_q_id net "${PUBNET}" )
 if [ -z ${pub_net_id} ]; then                                                                                                          
     neutron net-create "${PUBNET}" --tenant_id $tenant_id --shared --router:external=True
@@ -114,9 +114,27 @@ fi
 
 pub_subnet_id=$( get_q_id subnet "${CIDR}" )
 if [ -z ${pub_subnet_id} ]; then
-    neutron subnet-create ${PUBNET} ${CIDR} --tenant_id $tenant_id --disable-dhcp || /bin/true
+    neutron subnet-create ${PUBNET} ${CIDR} \
+                            --tenant_id $tenant_id \
+                            --disable-dhcp \
+                            --name public \
+                            --allocation-pool=start={{ floating_ip_start }},end={{ floating_ip_end }} \
+                            --gateway={{ gateway }} || /bin/true
     pub_subnet_id=$( get_q_id subnet ${CIDR} )
 fi
-
 neutron router-gateway-set "${ROUTER}" ${pub_net_id} || /bin/true
 
+#
+# Modify the default security group to allow outbound access
+#
+SECGROUP_ID=$(  neutron security-group-list | grep " default " | tail -1 | awk '{print $2 }' )
+if [ -z ${SECGROUP_ID} ]; then
+
+   neutron security-group-create default --description "default"
+   SECGROUP_ID=$(  neutron security-group-list | grep " default " | tail -1 | awk '{print $2 }' )
+fi
+neutron security-group-rule-create --direction ingress --protocol tcp --port_range_min 22 --port_range_max 22    ${SECGROUP_ID}
+neutron security-group-rule-create --direction ingress --protocol icmp  ${SECGROUP_ID}
+neutron security-group-rule-create --direction egress  --protocol tcp --port_range_min 1  --port_range_max 65536 ${SECGROUP_ID}
+neutron security-group-rule-create --direction egress  --protocol udp --port_range_min 1  --port_range_max 65536 ${SECGROUP_ID}
+neutron security-group-rule-create --direction egress --protocol icmp  ${SECGROUP_ID}
