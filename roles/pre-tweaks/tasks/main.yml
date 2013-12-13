@@ -1,0 +1,11 @@
+---
+# 
+# Steps to tweak the environment for packstack to be run later.
+#
+
+- name: ensure there's a directory for loopback devices
+  file: path={{ loopbacks_dir }} state=directory
+
+- name: get swift to use that loopback directory
+  file: src={{ loopbacks_dir }} dest=/srv/loopback-device state=link
+
