@@ -45,6 +45,13 @@
   poll: 5 
   notify: restart services
 
+#--------------------
+# SELiux & firewall
+#--------------------
+
+- name: disable SELinux
+  action: selinux policy=targeted state=permissive
+  
 - name: Disable selinux dynamically
   shell: creates=/etc/sysconfig/selinux.disabled setenforce 0 ; touch /etc/sysconfig/selinux.disabled
 
