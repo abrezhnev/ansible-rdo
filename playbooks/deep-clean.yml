@@ -304,7 +304,7 @@
 
    - name: unmount all glusterfs mounts
      command: umount /mnt/gv-{{ item }}
-     with_items: [cinder, instances, swift]
+     with_items: [cinder, nova, swift]
      ignore_errors: yes
 #     mount: name=/mnt/gv0 state=unmounted fstype=gluster 
 
@@ -315,12 +315,12 @@
 
    - name: Shutdown gluster volume
      shell: echo "y" | gluster volume stop {{ item }} force 
-     with_items: [cinder, instances, swift]
+     with_items: [cinder, nova, swift]
      ignore_errors: yes
 
    - name: Delete gluster volume
      shell: echo "y" | gluster volume delete {{ item }}
-     with_items: [cinder, instances, swift]
+     with_items: [cinder, nova, swift]
      ignore_errors: yes
 
    - name: Shutdown all gluster services
@@ -354,12 +354,12 @@
 
    - name: clear out any xattributes on cany bricks if used before ...
      shell: /tmp/clear-gluster-xattr.sh /export/{{ item }}-brick
-     with_items: [cinder, instances, swift]
+     with_items: [cinder, nova, swift]
      ignore_errors: yes
 
    - name: unmount all xfs mounts used by gluster
      command: umount /export/{{ item }}-brick
-     with_items: [cinder, instances, swift]
+     with_items: [cinder, nova, swift]
      ignore_errors: yes
 
    - name: remove all loopback devices not mounted
@@ -375,13 +375,6 @@
       - glusterfs
 
    - name: Remove gluster logs and state dir
-     file: path={{ item }} state=absent
-     ignore_errors: yes
-     with_items:
-      - /var/lib/glusterd
-      - /var/log/glusterd
-
-   - name: Clear out any xattr data on bricks
      file: path={{ item }} state=absent
      ignore_errors: yes
      with_items:

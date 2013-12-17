@@ -4,13 +4,34 @@
 
 - name: setup a mount point for the gluster fs volume
   file: path=/mnt/gv-{{ item }} state=directory owner=root group=root mode=0755
-  with_items: [cinder, instances, swift]
+  with_items: [cinder, nova, swift]
   tags: gluster_volume
   ignore_errors: yes
 
+- name: change fstab to mount cinder gluster mount
+  lineinfile: state=present
+              dest=/etc/fstab
+              line="{{ ansible_eth0.ipv4.address }}:cinder   /mnt/gv-cinder glusterfs rw,allow_other,max_read=131072 0 0"
+              regexp="/mnt/gv-cinder"
+  tags: gluster_volume
+
+- name: change fstab to mount nova instances gluster mount
+  lineinfile: state=present
+              dest=/etc/fstab
+              line="{{ ansible_eth0.ipv4.address }}:nova /mnt/gv-nova  glusterfs rw,allow_other,max_read=131072 0 0"
+              regexp="/mnt/gv-nova"
+  tags: gluster_volume
+
+- name: change fstab to mount swift gluster mount
+  lineinfile: state=present
+              dest=/etc/fstab
+              line="{{ ansible_eth0.ipv4.address }}:swift     /mnt/gv-swift  glusterfs rw,allow_other,max_read=131072 0 0"
+              regexp="/mnt/gv-swift"
+  tags: gluster_volume
+
 - name: mount the gluster volume as another filesystem
-  shell: mount -t glusterfs ${ansible_eth0.ipv4.address}:{{ item }} /mnt/gv-{{ item }}
-  with_items: [cinder, instances, swift]
+  shell: mount /mnt/gv-{{ item }}
+  with_items: [cinder, nova, swift]
   tags: gluster_volume
 
 - name: clear out any old nova instances data dir
@@ -19,5 +40,9 @@
 - name: create a /var/lib/nova directory
   file: path=/var/lib/nova state=directory
 
+- name: create a /mnt/gv-nova/instances directory
+  file: path=/mnt/gv-nova/instances state=directory owner=162 group=162
+
 - name: use gluster for nova instances directory
-  file: dest=/var/lib/nova/instances src=/mnt/gv-instances state=link
+  file: dest=/var/lib/nova/instances src=/mnt/gv-nova/instances state=link
+

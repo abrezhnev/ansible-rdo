@@ -1,8 +1,8 @@
-  
+
 #
 # Cleanup ...
 #
-  
+
 #
 # Clean brick to be used with gluster
 #
@@ -11,7 +11,7 @@
   tags:
     - gluster_volume_cleanup 
     - brick
-    
+
 - name: install attr package
   yum: name=${item} state=installed
   with_items:
@@ -20,13 +20,13 @@
   tags: 
   - gluster_volume_cleanup  
   - brick
-        
+
 - name: clear out any xattributes if this was used before ...
   shell: /tmp/clear-gluster-xattr.sh ${gluster_local_storage_path}
   tags: 
   - gluster_volume_cleanup  
   - brick
-    
+
 #
 # Disassemble gluster volume
 #    
@@ -34,21 +34,20 @@
   shell: umount /mnt/${gluster_volume_name}
   tags: 
   - gluster_volume_cleanup  
-  
   ignore_errors: yes
-    
+
 - name: list any gluster volumes
   shell: gluster volume list
   tags: 
   - gluster_volume_cleanup  
   ignore_errors: yes
-    
+
 - name: stop any gluster volumes
   shell: echo "Y" | gluster volume stop ${gluster_volume_name} 
   tags: 
   - gluster_volume_cleanup  
   ignore_errors: yes
-    
+
 - name: delete any gluster volumes
   shell: echo "Y" | gluster volume delete ${gluster_volume_name}
   tags: gluster_volume_cleanup  
@@ -59,19 +58,15 @@
   with_items: ${groups.gluster_nodes}
   tags: gluster_volume_cleanup  
   ignore_errors: yes   
-  
+
   #
   # Turn off services and uninstall gluster
   #
 - name: turn off gluster
   service: name=glusterd state=stopped   
-  
+
 - name: remove gluster packages
   yum: name=${item} enablerepo=${gluster_repo_name} state=absent
   with_items:
      - glusterfs-server
      - glusterfs-fuse
-          
-      
-      
-      

@@ -35,9 +35,9 @@
   async: 3600
   poll: 5
 
-- name: create a loopback file for a shared instance directory for nova instances
-  shell: dd if=/dev/zero of={{ loopbacks_dir }}/instances-block bs=1G count={{ gluster_brick_size }}
-         creates={{ loopbacks_dir }}/instances-block
+- name: create a loopback file for a shared nova instances directory for nova instances
+  shell: dd if=/dev/zero of={{ loopbacks_dir }}/nova-block bs=1G count={{ gluster_brick_size }}
+         creates={{ loopbacks_dir }}/nova-block
   when: make_gluster_loopback_brick
   async: 3600
   poll: 5
@@ -54,7 +54,7 @@
 - name: deattach associated loop device
   shell: "DEV=$( losetup -a | grep {{ item }} | tail -1 | awk -F: '{print $1}') && losetup -d $DEV"   
   when: make_gluster_loopback_brick
-  with_items:  [cinder, instances, swift]
+  with_items:  [cinder, nova, swift]
   ignore_errors: yes
 
 - name: create a loopback device for cinder
@@ -62,8 +62,8 @@
   when: make_gluster_loopback_brick
   ignore_errors: yes
 
-- name: create a loopback device for the instance dir
-  shell: losetup -f {{ loopbacks_dir }}/instances-block
+- name: create a loopback device for the nova dir
+  shell: losetup -f {{ loopbacks_dir }}/nova-block
   when: make_gluster_loopback_brick
   ignore_errors: yes
 
@@ -81,7 +81,7 @@
 
 - name: setup brick FS for gluster (will fail if already formatted)
   shell: "DEV=$( losetup -a | grep {{ item }} | tail -1 | awk -F: '{print $1}') && mkfs.xfs -f -i size=512 $DEV"
-  with_items:  [cinder, instances, swift]
+  with_items:  [cinder, nova, swift]
   ignore_errors: yes
   tags:
     - brick
@@ -90,7 +90,7 @@
   file: path={{ item }} state=directory
   with_items: 
     - ${brick_mount_cinder}
-    - ${brick_mount_instances}
+    - ${brick_mount_nova}
 #    - ${brick_mount_swift}
   tags:
     - brick
@@ -104,12 +104,12 @@
   tags:
     - brick
 
-- name: read loopback dev for nova instances block file
-  shell: "losetup -a | grep instances | tail -1 | awk -F: '{print $1}'"
+- name: read loopback dev for nova block file
+  shell: "losetup -a | grep nova | tail -1 | awk -F: '{print $1}'"
   register: loopdev
 
-- name: create mount entry for the new nova instances brick, and mount
-  mount: name={{ brick_mount_instances }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+- name: create mount entry for the new nova brick, and mount
+  mount: name={{ brick_mount_nova }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   tags:
     - brick
 
