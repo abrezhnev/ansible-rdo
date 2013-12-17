@@ -23,6 +23,7 @@ gateway_net:     10.255.75.0
 gateway_netmask: 255.255.255.0
 gateway_ip:      10.255.75.2
 gateway:         10.255.75.1
+nameserver:      128.103.200.101
 
 floating_ip_start: 10.255.75.3
 floating_ip_end:   10.255.75.254
