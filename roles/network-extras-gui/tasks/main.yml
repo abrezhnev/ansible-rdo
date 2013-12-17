@@ -10,19 +10,19 @@
 - name: enable LBaaS GUI elements
   lineinfile: state=present
               dest=/etc/openstack-dashboard/local_settings
-              line="    'enable_lb': True,"
+              line="    'enable_lb':True,"
               regexp="enable_lb"
 
 - name: enable FWaaS GUI elements
   lineinfile: state=present
               dest=/etc/openstack-dashboard/local_settings
-              line="    'enable_firewall': True,"
+              line="    'enable_firewall':True,"
               regexp="enable_firewall"
 
 - name: enable VPNaaS GUI elements
   lineinfile: state=present
               dest=/etc/openstack-dashboard/local_settings
-              line="    'enable_vpn': True,"
+              line="    'enable_vpn':True,"
               regexp="enable_vpn"
 
 
