@@ -16,6 +16,31 @@ function get_q_id
 cd /tmp
 
 #
+# Create a mini flavor for testing
+#
+if [[ -z $( nova flavor-list | grep m1.mini ) ]]; then
+    nova flavor-create m1.mini 6 1024 5 1
+fi
+
+if [[ -z $( nova flavor-list | grep m1.nano ) ]]; then
+    nova flavor-create m1.nano  7 128 0 1
+fi
+
+#
+# Figure out admin's tenant ID
+#
+tenant="admin"
+tenant_id=$( get_k_id tenant " ${tenant} " )
+
+#
+# Up admin's quotas
+#
+nova    quota-update --instances 100 ${tenant_id}
+nova    quota-update --cores     100 ${tenant_id}
+nova    quota-update --ram    102400 ${tenant_id}
+neutron quota-update --ports     200 
+
+#
 # Make sure we have an image to use 
 #
  
@@ -55,8 +80,7 @@ echo "IMAGE2_ID: ${F19_IMAGE_ID}"
 # Create Neutron objects
 # -------------------------
 
-tenant="admin"
-tenant_id=$( get_k_id tenant " ${tenant} " )
+
 
 # Create a private net and subnet
 NET=admin_net1
@@ -69,7 +93,7 @@ fi
 
 subnet_id=$( get_q_id subnet "${CIDR}" )
 if [ -z ${subnet_id} ]; then
-    neutron subnet-create --tenant_id "$tenant_id" "${NET}" "${CIDR}"
+    neutron subnet-create --dns-nameserver {{ nameserver }} --tenant_id "$tenant_id" "${NET}" "${CIDR}"
     subnet_id=$( get_q_id subnet "${CIDR}" )
 fi
 
@@ -84,7 +108,7 @@ fi
 
 subnet_id2=$( get_q_id subnet "${CIDR}" )
 if [ -z ${subnet_id2} ]; then
-    neutron subnet-create --tenant_id $tenant_id "${NET}" "${CIDR}"
+    neutron subnet-create --dns-nameserver {{ nameserver }} --tenant_id $tenant_id "${NET}" "${CIDR}"
     subnet_id2=$( get_q_id subnet "${CIDR}" )
 fi
 
@@ -119,6 +143,7 @@ if [ -z ${pub_subnet_id} ]; then
                             --disable-dhcp \
                             --name public \
                             --allocation-pool=start={{ floating_ip_start }},end={{ floating_ip_end }} \
+                            --dns-nameserver {{ nameserver }} \
                             --gateway={{ gateway }} || /bin/true
     pub_subnet_id=$( get_q_id subnet ${CIDR} )
 fi

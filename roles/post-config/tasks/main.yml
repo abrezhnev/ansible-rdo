@@ -16,6 +16,9 @@
 - name: create these basic objects for admin
   shell: source /root/keystonerc_admin && /root/create_admin_objects.sh
 
+- name: change admin quota so we can bang on this thing
+  shell: source /root/keystonerc_admin &&  nova quota-update --instances 100 admin
+
 #- include: images.yml
 
 - name: check out some post-config action for Openstack
