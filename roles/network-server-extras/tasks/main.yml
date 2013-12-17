@@ -5,11 +5,17 @@
 #
 
 - name: change neutron to use this service
-  ini_file: dest=/etc/neutron/neutron.conf 
-            section=DEFAULT
-            option=service_plugins
-            value="neutron.services.loadbalancer.plugin.LoadBalancerPlugin,neutron.services.firewall.fwaas_plugin.FirewallPlugin"
-            backup=yes
+  lineinfile: state=present
+              dest=/etc/neutron/neutron.conf 
+              line="service_plugins = neutron.services.loadbalancer.plugin.LoadBalancerPlugin,neutron.services.firewall.fwaas_plugin.FirewallPlugin,neutron.services.vpn.plugin.VPNDriverPlugin"
+              regexp="service_plugins"
+
+#- name: change neutron to use this service
+#  ini_file: dest=/etc/neutron/neutron.conf 
+#            section=default
+#            option=service_plugins
+#            value="neutron.services.loadbalancer.plugin.LoadBalancerPlugin,neutron.services.firewall.fwaas_plugin.FirewallPlugin"
+#            backup=yes
 # service_plugins = neutron.services.loadbalancer.plugin.LoadBalancerPlugin,neutron.services.firewall.fwaas_plugin.FirewallPlugin,neutron.services.vpn.plugin.VPNDriverPlugin
 
 

@@ -11,24 +11,12 @@
 - name: write a LBaaS agent config file
   template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=neutron mode=0664
 
-- name: change neutron to use this service
-  ini_file: dest=/etc/neutron/neutron.conf 
-            section=DEFAULT
-            option=service_plugins
-            value=neutron.services.loadbalancer.plugin.LoadBalancerPlugin
-            backup=yes
-
-- name: restart neutron
-  service: name=neutron-server state=restarted
-
-
 - name: start the LBaaS agent
   service: name=neutron-lbaas-agent state=restarted
 
 #
 # Setup FWaaS
 #
-
 
 - name: copy fw config
   copy: src=fwaas_driver.ini dest=/etc/neutron/fwaas_driver.ini owner=neutron group=neutron
