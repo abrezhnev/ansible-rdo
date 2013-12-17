@@ -51,7 +51,7 @@
 
 - name: disable SELinux
   action: selinux policy=targeted state=permissive
-  
+
 - name: Disable selinux dynamically
   shell: creates=/etc/sysconfig/selinux.disabled setenforce 0 ; touch /etc/sysconfig/selinux.disabled
 
@@ -61,6 +61,10 @@
 - name: Disable iptables
   service: name=iptables state=stopped enabled=no
   ignore_errors: yes
+
+# This will need to be generalized ...
+- name: Disable GRO on NICS that are used for GRE tunneling 
+  shell: ethtool -K eth0 gro off
 
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
