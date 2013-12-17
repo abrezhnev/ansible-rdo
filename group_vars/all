@@ -38,8 +38,8 @@ gluster_brick_size: 200
 #gluster_vol_device: loop1
 
 brick_mount_cinder: /export/cinder-brick
-brick_mount_instances: /export/instances-brick
-brick_mount_swift: /export/swift-brick
+brick_mount_nova:   /export/nova-brick
+brick_mount_swift:  /export/swift-brick
 gluster_volume_name: gv0
 #gluster_vol_options: replica 2
 
