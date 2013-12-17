@@ -11,9 +11,21 @@
   shell: ifup   {{ gateway_if }}.{{ gateway_vlan }}
 
 - name: de-attach to the br-ex bridge using OVS
-  shell: ovs-vsctl delete-port br-ex {{ gateway_if }}.{{ gateway_vlan }}
+  shell: ovs-vsctl del-port br-ex {{ gateway_if }}.{{ gateway_vlan }}
   ignore_errors: yes
 
 - name: attach to the br-ex bridge using OVS
   shell: ovs-vsctl add-port br-ex {{ gateway_if }}.{{ gateway_vlan }}
+
+- name: Set dhcp options to use MTU=1400
+  copy: src=dnsmasq-neutron.conf dest=/etc/neutron/dnsmasq-neutron.conf owner=neutron group=neutron mode=0644
+
+- name: tell dhcp_agent to use those settings
+  lineinfile: state=present
+              dest=/etc/neutron/dhcp_agent.ini
+              line="dnsmasq_config_file = /etc/neutron/dnsmasq-neutron.conf"
+              regexp="dnsmasq_config_file"
+
+- name: restart dhcp agent to use new settings
+  service: name=neutron-dhcp-agent  state=restarted
 
