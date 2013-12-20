@@ -7,6 +7,7 @@ proxy_env:
   https_proxy: http://proxy.noc.harvard.edu:3128
   no_proxy:    127.0.0.1,localhost,lab.noc.harvard.edu,10.255.73.103,10.242.108.9,10.242.108.10,10.242.108.11
       
+# System vars      
 #ntp_server: 10.255.73.1
 
 #
@@ -22,7 +23,9 @@ gateway_cidr:    10.255.75.0/24
 gateway_net:     10.255.75.0
 gateway_netmask: 255.255.255.0
 gateway_ip:      10.255.75.2
+gateway_port_ip: 10.255.75.3
 gateway:         10.255.75.1
+
 nameserver:      128.103.200.101
 
 floating_ip_start: 10.255.75.3
