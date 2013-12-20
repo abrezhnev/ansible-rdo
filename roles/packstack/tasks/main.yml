@@ -9,7 +9,7 @@
    - mod_ssl
    - sheepdog
 
-- name: install packages that packstack will miss dependencies on (hopefuly these will go away ..)
+- name: install packages that packstack missed
   yum: name={{ item }} state=present
   environment: proxy_env
   with_items:
