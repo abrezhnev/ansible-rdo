@@ -39,14 +39,14 @@
   ignore_errors: yes
 
 # Start it.
-- name: start up the gluster volume
+- name: start up the gluster volume for each service
   shell: gluster volume start {{ item }}
   with_items: [cinder, nova, swift]
   tags: gluster_volume
   ignore_errors: yes
 
 # query it  
-- name: set up a gluster volume
+- name: query the gluster volume
   shell: gluster volume info
   tags: gluster_volume
 
