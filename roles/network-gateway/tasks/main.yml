@@ -7,6 +7,9 @@
 - name: create a network config for the gateway interface
   template: src=ifcfg-ethX.XXX.j2 dest=/etc/sysconfig/network-scripts/ifcfg-{{ gateway_if }}.{{ gateway_vlan }} mode=0664
 
+- name: create a network config for the external bridge
+  template: src=ifcfg-br-ex.j2 dest=/etc/sysconfig/network-scripts/ifcfg-br-ex mode=0664
+
 - name: bring up that interface
   shell: ifup   {{ gateway_if }}.{{ gateway_vlan }}
 

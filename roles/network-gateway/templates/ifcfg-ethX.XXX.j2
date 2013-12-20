@@ -1,7 +1,7 @@
 DEVICE={{ gateway_if }}.{{ gateway_vlan }}
 #BOOTPROTO=none
-ONBOOT=yes
-IPADDR={{ gateway_ip }}
+ONBOOT=no
+IPADDR={{ gateway_port_ip }}
 NETMASK={{ gateway_netmask }}
 USERCTL=no
 NETWORK={{ gateway_net }}
