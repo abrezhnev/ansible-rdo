@@ -55,9 +55,9 @@
        - qpidd
        - memcached
        - nagios
+       - nrpe
        - tgtd
-
-
+       - iscsid
 
    - name: Remove all OpenStack packages
      yum: name={{ item }} state=removed
