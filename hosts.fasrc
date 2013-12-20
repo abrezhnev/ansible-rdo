@@ -4,17 +4,6 @@ osc02.rc.fas.harvard.edu
 osc03.rc.fas.harvard.edu
 osc04.rc.fas.harvard.edu
 
-[noclab]
-ospoc1.lab.noc.harvard.edu
-ospoc2.lab.noc.harvard.edu
-ospoc3.lab.noc.harvard.edu
-ospoc4.lab.noc.harvard.edu
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
-
-[ec2_hosts]
-#54.221.222.223
-
 [gluster_loopback]
 osc01.rc.fas.harvard.edu
 osc02.rc.fas.harvard.edu
@@ -41,6 +30,9 @@ osc02.rc.fas.harvard.edu
 
 [openstack_neutron_dhcp]
 osc02.rc.fas.harvard.edu
+
+[openstack_neutron_meta]
+osc01.rc.fas.harvard.edu
 
 [openstack_horizon]
 osc01.rc.fas.harvard.edu
