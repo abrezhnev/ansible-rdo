@@ -87,11 +87,13 @@
 #
 #  Prepare to run tempest
 #           
+
 - name: pull tempest from GitHub
   git: repo=https://github.com/openstack/tempest.git
        dest=/tmp/tempest
-       version=stable/havana
+       version=stable/{{ openstack_release }}
   environment: proxy_env
+  ignore_errors: yes
 
 - name: setup a tempest test config
   template: src=tempest.conf.j2 dest=/tmp/tempest/etc/tempest.conf
