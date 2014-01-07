@@ -15,6 +15,7 @@
 
 - name: create these basic objects for admin
   shell: source /root/keystonerc_admin && /root/create_admin_objects.sh
+  ignore_errors: yes
 
 - name: change admin quota so we can bang on this thing
   shell: source /root/keystonerc_admin &&  nova quota-update --instances 100 admin
@@ -22,7 +23,8 @@
 #- include: images.yml
 
 - name: check out some post-config action for Openstack
-  git: repo=https://github.com/robparrott/openstack-post-config.git dest=/tmp/openstack-post-config
+  git: repo=https://github.com/robparrott/openstack-post-config.git dest=/tmp/openstack-post-config force=yes
+  ignore_errors: yes
 
 #- name: Now run post-config scripts
 #  shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
