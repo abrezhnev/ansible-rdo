@@ -41,7 +41,8 @@
   file: path=/var/lib/nova state=directory
 
 - name: create a /mnt/gv-nova/instances directory
-  file: path=/mnt/gv-nova/instances state=directory owner=162 group=162
+  file: path=/mnt/gv-nova/instances state=directory owner=162 group=162 
+  ignore_errors: yes  
 
 - name: use gluster for nova instances directory
   file: dest=/var/lib/nova/instances src=/mnt/gv-nova/instances state=link
