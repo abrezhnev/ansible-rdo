@@ -1,18 +1,18 @@
 ---
 
 #
-# Setup LBaaS
+# Setup LBaaS (SUPERCEDED by Packstack now...)
 #
 
-- name: installed LBaaS required packages
-  yum: name={{ item }} state=installed
-  with_items: [haproxy]
+#- name: installed LBaaS required packages
+#  yum: name={{ item }} state=installed
+#  with_items: [haproxy]
 
-- name: write a LBaaS agent config file
-  template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=neutron mode=0664
+#- name: write a LBaaS agent config file
+#  template: src=lbaas_agent.ini.j2 dest=/etc/neutron/lbaas_agent.ini owner=neutron group=neutron mode=0664
 
-- name: start the LBaaS agent
-  service: name=neutron-lbaas-agent state=restarted
+#- name: start the LBaaS agent
+#  service: name=neutron-lbaas-agent state=restarted
 
 #
 # Setup FWaaS

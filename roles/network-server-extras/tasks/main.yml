@@ -4,7 +4,7 @@
 # Enable extra services on Neutron Server
 #
 
-- name: change neutron to use this service
+- name: change neutron to use a wider set of services
   lineinfile: state=present
               dest=/etc/neutron/neutron.conf 
               line="service_plugins = neutron.services.loadbalancer.plugin.LoadBalancerPlugin,neutron.services.firewall.fwaas_plugin.FirewallPlugin,neutron.services.vpn.plugin.VPNDriverPlugin"
