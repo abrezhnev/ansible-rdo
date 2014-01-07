@@ -106,6 +106,8 @@ CONFIG_MYSQL_USER=root
 # The IP address of the server on which to install the QPID service
 CONFIG_QPID_HOST={{ ip_list('openstack_controller') }}
 
+CONFIG_QPID_ENABLE_AUTH=n
+
 # Enable SSL for the QPID service
 CONFIG_QPID_ENABLE_SSL=n
 
@@ -284,6 +286,8 @@ CONFIG_NEUTRON_L3_EXT_BRIDGE=br-ex
 # A comma separated list of IP addresses on which to install Neutron
 # DHCP agent
 CONFIG_NEUTRON_DHCP_HOSTS={{ ip_list('openstack_neutron_dhcp') }}
+
+CONFIG_NEUTRON_LBAAS_HOSTS={{ ip_list('openstack_neutron_dhcp') }}
 
 # The name of the L2 plugin to be used with Neutron
 CONFIG_NEUTRON_L2_PLUGIN=openvswitch
