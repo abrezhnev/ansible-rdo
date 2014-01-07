@@ -17,6 +17,12 @@
    - python-jsonpointer
    - python-openstackclient
 
+- name: ensure the latest of some packages for packstack
+  yum: name={{ item }} state=latest
+  environment: proxy_env
+  with_items:
+   - python-migrate
+
 - name: Copy over packstack passwores helper script
   copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
 
