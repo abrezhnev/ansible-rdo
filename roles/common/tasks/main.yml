@@ -20,7 +20,7 @@
   template: src=hosts.j2 dest=/etc/hosts
 
 - name: copy EPEL yum repo files
-  copy: src=epel.repo  dest=/etc/yum.repos.d/
+  copy: src=epel.repo  dest=/etc/yum.repos.d/epel-for-openstack.repo
 
 - name: Create the RDO repo file
   template: src=rdo-openstack.repo.j2 dest=/etc/yum.repos.d/rdo.repo
