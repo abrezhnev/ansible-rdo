@@ -23,7 +23,7 @@
   with_items:
    - python-migrate
 
-- name: Copy over packstack passwores helper script
+- name: Copy over packstack passwords helper script
   copy: src=create-packstack-passwords.sh dest=/tmp/create-packstack-passwords.sh mode=0775
 
 - name: Create a packstack passwords answer file

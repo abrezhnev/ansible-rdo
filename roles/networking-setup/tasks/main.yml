@@ -1,0 +1,9 @@
+---
+#
+# Setup networking on a per host basis.
+#
+
+# This will need to be generalized ...
+- name: Disable GRO on NICS that are used for GRE tunneling 
+  shell: ethtool -K {{ tunnel_if }} gro off
+

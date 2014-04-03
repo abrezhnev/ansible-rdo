@@ -1,38 +1,36 @@
-#[fasrc]
-#osc01.rc.fas.harvard.edu
-#osc02.rc.fas.harvard.edu
-#osc03.rc.fas.harvard.edu
-#osc04.rc.fas.harvard.edu
-
 [noclab]
-#ospoc1.lab.noc.harvard.edu
-#ospoc2.lab.noc.harvard.edu
-ospoc3.lab.noc.harvard.edu
-ospoc4.lab.noc.harvard.edu
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
-
-[ec2_hosts]
-#54.221.222.223
+ospoc1.lab.noc.harvard.edu primary_if=eth10 tunnel_if=eth10
+ospoc2.lab.noc.harvard.edu primary_if=eth10 tunnel_if=eth10
+ospoc3.lab.noc.harvard.edu primary_if=em1   tunnel_if=em1
+ospoc4.lab.noc.harvard.edu primary_if=em1   tunnel_if=em1
+ospoc5.lab.noc.harvard.edu primary_if=em1   tunnel_if=em1
+#ospoc6.lab.noc.harvard.edu primary_if=em1   tunnel_if=em1
 
 [gluster_loopback]
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
+
+[gluster_master]
+ospoc3.lab.noc.harvard.edu
+
+[gluster_nodes]
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [openstack_controller]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_keystone]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_glance]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_cinder]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_neutron]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_neutron_l3]
 ospoc4.lab.noc.harvard.edu
@@ -44,33 +42,23 @@ ospoc4.lab.noc.harvard.edu
 ospoc4.lab.noc.harvard.edu
 
 [openstack_horizon]
-ospoc3.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_heat]
-ospoc4.lab.noc.harvard.edu
+ospoc5.lab.noc.harvard.edu
 
 [openstack_compute]
+ospoc1.lab.noc.harvard.edu
+ospoc2.lab.noc.harvard.edu
 ospoc3.lab.noc.harvard.edu
-ospoc4.lab.noc.harvard.edu
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
 
 [swift_proxy_nodes]
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
-
-[swift_storage_nodes]
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
-
-[gluster_master]
-ospoc3.lab.noc.harvard.edu
-
-[gluster_nodes]
 ospoc3.lab.noc.harvard.edu
 ospoc4.lab.noc.harvard.edu
-ospoc5.lab.noc.harvard.edu
-ospoc6.lab.noc.harvard.edu
+
+[swift_storage_nodes]
+ospoc3.lab.noc.harvard.edu
+ospoc4.lab.noc.harvard.edu
 
 [nfs_nodes]
 

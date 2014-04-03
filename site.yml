@@ -5,19 +5,20 @@
   roles:
    - huit-accessible
    - common
+   - networking-setup
    - pre-tweaks
 
-- hosts: gluster_nodes
-  roles: [gluster]
+# - hosts: gluster_nodes
+#   roles: [gluster]
 
-- hosts: gluster_master
-  roles: [gluster-master]
+# - hosts: gluster_master
+#   roles: [gluster-master]
 
-- hosts: openstack_compute
-  roles: [gluster-client]
+# - hosts: openstack_compute
+#   roles: [gluster-client]
 
-- hosts: swift_storage_nodes
-  roles: [gluster-client]
+# - hosts: swift_storage_nodes
+#   roles: [gluster-client]
 
 - hosts: openstack_controller
   roles:
@@ -53,4 +54,4 @@
 - hosts: openstack_controller
   roles:
    - post-config
-   - testing
+#   - testing

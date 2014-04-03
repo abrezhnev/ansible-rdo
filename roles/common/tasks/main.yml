@@ -12,15 +12,17 @@
               create=yes
               line="exclude=cloud-init kernel"
 
-- name: Install packages to allow for accelerated mode
-  yum: name=python-keyczar  state=installed
-  environment: proxy_env  
+#- name: Install packages to allow for accelerated mode
+#  yum: name=python-keyczar  state=installed
+#  environment: proxy_env  
 
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
 
-- name: copy EPEL yum repo files
-  copy: src=epel.repo  dest=/etc/yum.repos.d/epel-for-openstack.repo
+- name: Create epel.repo 
+  template: src=epel.repo.j2 dest=/etc/yum.repos.d/epel-for-openstack.repo
+#  copy: src=epel.repo  dest=/etc/yum.repos.d/epel-for-openstack.repo
+
 
 - name: Create the RDO repo file
   template: src=rdo-openstack.repo.j2 dest=/etc/yum.repos.d/rdo.repo
@@ -62,14 +64,10 @@
   service: name=iptables state=stopped enabled=no
   ignore_errors: yes
 
-# This will need to be generalized ...
-- name: Disable GRO on NICS that are used for GRE tunneling 
-  shell: ethtool -K eth0 gro off
-
 - name: Install the openstack utils packge
   yum:  name=openstack-utils state=installed
-  async: 60
-  poll: 5 
+#  async: 60
+#  poll: 5 
   environment: proxy_env
 
 - name: setup a proxy sh init file to source
@@ -82,7 +80,7 @@
 - name: manually sync ntp
   shell: service ntpd stop && ntpdate {{ ntp_server }} && service ntpd start
 
-- include: kernel-update.yml
+#- include: kernel-update.yml
 
 #- include: openvswitch-upgrade.yml
 

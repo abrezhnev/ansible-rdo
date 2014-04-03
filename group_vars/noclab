@@ -5,10 +5,16 @@
 proxy_env:
   http_proxy:  http://proxy.noc.harvard.edu:3128
   https_proxy: http://proxy.noc.harvard.edu:3128
-  no_proxy:    127.0.0.1,localhost,lab.noc.harvard.edu,10.255.73.103,10.242.108.9,10.242.108.10,10.242.108.11
-      
+  no_proxy:    127.0.0.1,localhost,10.255.77.106,lab.noc.harvard.edu
+
+epel_base_url: http://mirrors.rit.edu/fedora/epel/6/$basearch
+#epel_base_url: http://10.255.77.106:8080/mirror/epel-x86_64/RPMS.epel-6/
+
+glusterfs_repo: http://download.gluster.org/pub/gluster/glusterfs/3.4/3.4.1/EPEL.repo/epel-$releasever/$basearch/
+#glusterfs_repo: http://10.255.77.106:8080/mirror/glusterfs-x86_64/RPMS.epel-6/
+
 # System vars      
-#ntp_server: 10.255.73.1
+ntp_server: 10.255.77.1
 
 #
 # Neutron/Quantum vars for FAS hosts
@@ -31,14 +37,17 @@ nameserver:      128.103.200.101
 floating_ip_start: 10.255.75.3
 floating_ip_end:   10.255.75.254
 
-iface: eth0
+# default interface name
+primary_if: em1
+tunnel_if: em1
 
 #
 # Gluster
 #
-loopbacks_dir: /home/loopbacks
+#make_gluster_loopback_brick: true
+make_gluster_loopback_brick: false
 
-make_gluster_loopback_brick: true
+loopbacks_dir: /home/loopbacks
 gluster_brick_size: 200
 gluster_vol_device: loop1
 

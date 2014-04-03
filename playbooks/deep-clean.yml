@@ -51,7 +51,7 @@
        - openstack-swift-object-updater
        - openstack-swift-proxy
        - mongod 
-       - httpd
+       # - httpd
        - qpidd
        - memcached
        - nagios
@@ -72,7 +72,6 @@
        - openstack-cinder 
        - openstack-dashboard 
        - openstack-dashboard-theme 
-       - openstack-foreman-installer 
        - openstack-glance-doc 
        - openstack-glance 
        - openstack-heat-api-cfn 
@@ -131,7 +130,6 @@
        - openstack-swift-object 
        - openstack-swift-plugin-swift3 
        - openstack-swift-proxy 
-       - openstack-utils 
        - packstack-modules-puppet 
        - novnc 
        - python-ceilometerclient-doc 

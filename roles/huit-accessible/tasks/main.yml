@@ -1,6 +1,12 @@
 ---
 # The tasks to make the hosts accessible
 
+- name: install libselinux-python
+  yum:  name=libselinux-python state=installed
+
+- name: create /root/.ssh
+  file: path=/root/.ssh state=directory mode=0700 owner=root
+
 - name: copy in authorized_keys file
   copy: src=authorized_keys  dest=/root/.ssh/authorized_keys mode=0600
 

@@ -7,7 +7,7 @@
   copy: src=glusterfs-epel.repo  dest=/etc/yum.repos.d/glusterfs.repo owner=root group=root mode=0644
 
 - name: install gluster packages
-  yum: name=${item} state=installed
+  yum: name={{ item }} state=installed
   environment: proxy_env
   with_items:
      - glusterfs-server
@@ -89,8 +89,8 @@
 - name: setup a mount point for the brick
   file: path={{ item }} state=directory
   with_items: 
-    - ${brick_mount_cinder}
-    - ${brick_mount_nova}
+    - "{{ brick_mount_cinder }}"
+    - "{{ brick_mount_nova }}"
 #    - ${brick_mount_swift}
   tags:
     - brick

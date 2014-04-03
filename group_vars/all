@@ -24,7 +24,8 @@ ram_alloc_ratio: 1.5
 #
 # Neutron/Quantum vars
 #
-iface: eth0
+primary_if: eth0
+tunnel_if: eth1
 
 #
 # Gluster vars

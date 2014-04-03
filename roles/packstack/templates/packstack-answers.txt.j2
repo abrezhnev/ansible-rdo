@@ -4,11 +4,13 @@
 
 {% macro ip_list(groupname) -%}{% 
 
-  for host in groups[groupname] 
+  for host in groups[groupname]
 
-    %}{{ hostvars[host]['ansible_'+iface].ipv4.address }}{% 
+    %}{% set interface = hostvars[host]['primary_if'] 
+
+    %}{{ hostvars[host]['ansible_'+interface]['ipv4']['address'] }}{% 
     
-    if not loop.last %}, {% endif %}{%
+    if not loop.last %},{% endif %}{%
 
   endfor 
   
@@ -18,7 +20,9 @@
 
   for host in groups[groupname] 
 
-    %}'{{ hostvars[host]['ansible_'+iface].ipv4.address }}:/cinder'{% 
+    %}{% set interface = hostvars[host]['primary_if'] 
+
+    %}'{{ hostvars[host]['ansible_'+interface]['ipv4']['address'] }}:/cinder'{% 
     
     if not loop.last %},{% endif %}{%
 
@@ -57,7 +61,7 @@ CONFIG_HORIZON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=n
+CONFIG_SWIFT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
@@ -83,6 +87,10 @@ CONFIG_NAGIOS_INSTALL=y
 # file and don't want Packstack to touch these servers. Leave plain if
 # you don't need to exclude any server.
 EXCLUDE_SERVERS=
+
+# Set to 'y' if you want to run OpenStack services in debug mode. 
+# Otherwise set to 'n'.
+CONFIG_DEBUG_MODE=n  
 
 #-----------------------------
 #
@@ -332,8 +340,8 @@ CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:4000
 
 # Override the IP used for GRE tunnels on this hypervisor to the IP
 # found on the specified interface (defaults to the HOST IP)
-CONFIG_NEUTRON_OVS_TUNNEL_IF={{ compute_private_if }}
-
+#CONFIG_NEUTRON_OVS_TUNNEL_IF={{ compute_private_if }}
+CONFIG_NEUTRON_OVS_TUNNEL_IF=
 
 #-----------------------------
 #
