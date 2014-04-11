@@ -91,7 +91,7 @@
   with_items: 
     - "{{ brick_mount_cinder }}"
     - "{{ brick_mount_nova }}"
-#    - ${brick_mount_swift}
+    - "{{ brick_mount_swift }}"
   tags:
     - brick
 
@@ -101,6 +101,7 @@
 
 - name: create mount entry for the new cinder brick, and mount
   mount: name={{ brick_mount_cinder }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  ignore_errors: yes
   tags:
     - brick
 
@@ -110,17 +111,19 @@
 
 - name: create mount entry for the new nova brick, and mount
   mount: name={{ brick_mount_nova }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  ignore_errors: yes
   tags:
     - brick
 
-#- name: read loopback dev for swift block file
-#  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
-#  register: loopdev
+- name: read loopback dev for swift block file
+  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
+  register: loopdev
 
-#- name: create mount entry for the new swift brick, and mount
-#  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
-#  tags:
-#    - brick
+- name: create mount entry for the new swift brick, and mount
+  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  ignore_errors: yes
+  tags:
+    - brick
 
 
 
