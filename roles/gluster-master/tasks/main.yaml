@@ -2,10 +2,11 @@
 #
 # Configure gluster peers
 #
+# hostvars[host]['primary_if'] 
 
 - name: configure other gluster peers
-  action: shell gluster peer probe ${hostvars.${item}.ansible_eth0.ipv4.address}
-  with_items: ${groups.gluster_nodes}
+  action: shell gluster peer probe {{ hostvars[item].ansible_default_ipv4.address }}
+  with_items: groups.gluster_nodes
   tags: gluster_volume      
 
 #
