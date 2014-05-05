@@ -46,8 +46,8 @@ tunnel_if: em1
 #
 #make_gluster_loopback_brick: true
 make_gluster_loopback_brick: false
-
 loopbacks_dir: /home/loopbacks
+
 gluster_brick_size: 200
 gluster_vol_device: loop1
 
