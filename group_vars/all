@@ -1,6 +1,6 @@
 ---
 # Variables for openstack
-openstack_release: havana
+openstack_release: icehouse
 
 # System vars
 ntp_server: time.harvard.edu
@@ -10,8 +10,8 @@ ntp_server: time.harvard.edu
 #
 
 # lvm or gluster or nfs
-cinder_backend: gluster
-#cinder_backend: lvm
+#cinder_backend: gluster
+cinder_backend: lvm
 
 cinder_volume_size: 100G
 
@@ -31,7 +31,7 @@ tunnel_if: eth1
 # Gluster vars
 #
 do_gluster: False
-make_gluster_loopback_brick: true
+make_gluster_loopback_brick: false
 
 loopbacks_dir: /home/loopbacks
 
