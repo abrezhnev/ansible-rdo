@@ -107,9 +107,44 @@ CONFIG_MYSQL_USER=root
 
 #-----------------------------
 #
-# Qpid
+# AMQP Service
 #
 #-----------------------------
+
+# Set the server for the AMQP service
+CONFIG_AMQP_SERVER=rabbitmq
+
+# The IP address of the server on which to install the AMQP service
+CONFIG_AMQP_HOST={{ ip_list('openstack_controller') }}
+
+# Enable SSL for the AMQP service
+CONFIG_AMQP_ENABLE_SSL=n
+
+# Enable Authentication for the AMQP service
+CONFIG_AMQP_ENABLE_AUTH=n
+
+# The password for the NSS certificate database of the AMQP service
+#CONFIG_AMQP_NSS_CERTDB_PW=5ef7f645606241eb909468f27a33e259
+
+# The port in which the AMQP service listens to SSL connections
+CONFIG_AMQP_SSL_PORT=5671
+
+# The filename of the certificate that the AMQP service is going to
+# use
+CONFIG_AMQP_SSL_CERT_FILE=/etc/pki/tls/certs/amqp_selfcert.pem
+
+# The filename of the private key that the AMQP service is going to
+# use
+CONFIG_AMQP_SSL_KEY_FILE=/etc/pki/tls/private/amqp_selfkey.pem
+
+# Auto Generates self signed SSL certificate and key
+CONFIG_AMQP_SSL_SELF_SIGNED=y
+
+# User for amqp authentication
+CONFIG_AMQP_AUTH_USER=amqp_user
+
+# Password for user authentication
+#CONFIG_AMQP_AUTH_PASSWORD=a432a0f4b9cb4d0c
 
 # The IP address of the server on which to install the QPID service
 CONFIG_QPID_HOST={{ ip_list('openstack_controller') }}
@@ -225,6 +260,10 @@ CONFIG_NOVA_CONDUCTOR_HOST={{ ip_list('openstack_controller') }}
 # The IP address of the server on which to install the Nova Scheduler
 # service
 CONFIG_NOVA_SCHED_HOST={{ ip_list('openstack_controller') }}
+
+# Set to 'y' if you want to use VMware vCenter as hypervisor and
+# storageOtherwise set to 'n'.
+CONFIG_VMWARE_BACKEND=n
 
 # The overcommitment ratio for virtual to physical CPUs. Set to 1.0
 # to disable CPU overcommitment
@@ -430,7 +469,7 @@ CONFIG_HEAT_CFN_HOST={{ ip_list('openstack_heat') }}
 
 # The IP address of the server on which to install Ceilometer
 CONFIG_CEILOMETER_HOST={{ ip_list('openstack_heat') }}
-
+CONFIG_MONGODB_HOST={{ ip_list('openstack_heat') }}
 
 #-----------------------------
 #
