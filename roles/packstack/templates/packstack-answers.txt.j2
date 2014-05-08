@@ -61,7 +61,7 @@ CONFIG_HORIZON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=n
+CONFIG_SWIFT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
@@ -261,10 +261,6 @@ CONFIG_NOVA_CONDUCTOR_HOST={{ ip_list('openstack_controller') }}
 # service
 CONFIG_NOVA_SCHED_HOST={{ ip_list('openstack_controller') }}
 
-# Set to 'y' if you want to use VMware vCenter as hypervisor and
-# storageOtherwise set to 'n'.
-CONFIG_VMWARE_BACKEND=n
-
 # The overcommitment ratio for virtual to physical CPUs. Set to 1.0
 # to disable CPU overcommitment
 CONFIG_NOVA_SCHED_CPU_ALLOC_RATIO={{ cpu_alloc_ratio }}
@@ -310,6 +306,22 @@ CONFIG_NOVA_COMPUTE_PRIVIF={{ compute_private_if }}
 
 # Number of addresses in each private subnet
 #CONFIG_NOVA_NETWORK_SIZE=255
+
+# Set to 'y' if you want to use VMware vCenter as hypervisor and
+# storageOtherwise set to 'n'.
+CONFIG_VMWARE_BACKEND=n
+
+# The IP address of the VMware vCenter datastore
+CONFIG_VCENTER_HOST=
+
+# The username to authenticate to VMware vCenter datastore
+CONFIG_VCENTER_USER=
+
+# The password to authenticate to VMware vCenter datastore
+CONFIG_VCENTER_PASSWORD=
+
+# The name of the vCenter cluster
+CONFIG_VCENTER_CLUSTER_NAME=
 
 
 #-----------------------------
