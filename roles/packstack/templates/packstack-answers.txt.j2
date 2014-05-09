@@ -368,7 +368,7 @@ CONFIG_NEUTRON_LB_VLAN_RANGES=
 CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
 
 # Type of network to allocate for tenant networks
-CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=gre
+CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE={{ tunnel_protocol }}
 
 # A comma separated list of VLAN ranges for the Neutron openvswitch
 # plugin
