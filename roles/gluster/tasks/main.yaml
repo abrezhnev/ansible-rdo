@@ -76,16 +76,6 @@
 # Brick mounting   
 #---------------------
 
-- name: install xfs packages
-  yum: name=xfsprogs state=installed
-
-- name: setup brick FS for gluster (will fail if already formatted)
-  shell: "DEV=$( losetup -a | grep {{ item }} | tail -1 | awk -F: '{print $1}') && mkfs.xfs -f -i size=512 $DEV"
-  with_items:  [cinder, nova, swift]
-  ignore_errors: yes
-  tags:
-    - brick
-
 - name: setup a mount point for the brick
   file: path={{ item }} state=directory
   with_items: 
@@ -95,35 +85,81 @@
   tags:
     - brick
 
-- name: read loopback dev for cinder block file
-  shell: "losetup -a | grep cinder| tail -1 | awk -F: '{print $1}'"
-  register: loopdev
+- name: install xfs packages
+  yum: name=xfsprogs state=installed
+
+#
+# Setup Cinder 
+#
+
+- name: read dev for cinder logical volume or loopback device 
+  shell: |
+    DEV=$( lvs | grep cinder | awk  '{ print "/dev/mapper/" $2 "-" $1 }' )
+    if [ -z ${DEV} ]; then 
+      DEV=$( losetup -a | grep cinder | tail -1 | awk -F: '{print $1}' )
+    fi
+    echo ${DEV}
+  register: cinderdev
+
+- name: format cinder brick FS for gluster (will fail if already formatted)
+  shell: "mkfs.xfs -f -i size=512 {{ cinderdev.stdout }}"
+  ignore_errors: yes
+  tags:
+    - brick
 
 - name: create mount entry for the new cinder brick, and mount
-  mount: name={{ brick_mount_cinder }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_cinder }} src={{ cinderdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   ignore_errors: yes
   tags:
     - brick
 
-- name: read loopback dev for nova block file
-  shell: "losetup -a | grep nova | tail -1 | awk -F: '{print $1}'"
-  register: loopdev
+#
+# Setup Nova 
+#
+
+- name: read dev for nova logical volume or loopback device 
+  shell: |
+    DEV=$( lvs | grep nova | awk  '{ print "/dev/mapper/" $2 "-" $1 }' )
+    if [ -z ${DEV} ]; then 
+      DEV=$( losetup -a | grep nova | tail -1 | awk -F: '{print $1}' )
+    fi
+    echo ${DEV}
+  register: novadev
+
+- name: format nova brick FS for gluster (will fail if already formatted)
+  shell: "mkfs.xfs -f -i size=512 {{ novadev.stdout }}"
+  ignore_errors: yes
+  tags:
+    - brick
 
 - name: create mount entry for the new nova brick, and mount
-  mount: name={{ brick_mount_nova }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_nova}} src={{ novadev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   ignore_errors: yes
   tags:
     - brick
 
-- name: read loopback dev for swift block file
-  shell: "losetup -a | grep swift | tail -1 | awk -F: '{print $1}'"
-  register: loopdev
+#
+# Setup Swift 
+#
+
+- name: read dev for swift logical volume or loopback device 
+  shell: |
+    DEV=$( lvs | grep swift | awk  '{ print "/dev/mapper/" $2 "-" $1 }' )
+    if [ -z ${DEV} ]; then 
+      DEV=$( losetup -a | grep swift | tail -1 | awk -F: '{print $1}' )
+    fi
+    echo ${DEV}
+  register: swiftdev
+
+- name: format swift brick FS for gluster (will fail if already formatted)
+  shell: "mkfs.xfs -f -i size=512 {{ swiftdev.stdout }}"
+  ignore_errors: yes
+  tags:
+    - brick
 
 - name: create mount entry for the new swift brick, and mount
-  mount: name={{ brick_mount_swift }} src={{ loopdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+  mount: name={{ brick_mount_swift}} src={{ swiftdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
   ignore_errors: yes
   tags:
     - brick
-
-
 
