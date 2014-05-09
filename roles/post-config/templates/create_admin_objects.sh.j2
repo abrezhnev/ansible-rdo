@@ -8,8 +8,6 @@ function get_k_id
 
 function get_q_id 
 {
-   unset http_proxy
-   unset https_proxy
    RETVAL=$( neutron ${1}-list | grep "${2}" | awk '{print $2}' )
    echo $RETVAL
 }
@@ -166,8 +164,12 @@ if [ -z ${SECGROUP_ID} ]; then
    neutron security-group-create default --description "default"
    SECGROUP_ID=$(  neutron security-group-list | grep " default " | tail -1 | awk '{print $2 }' )
 fi
+
+#
+# These may fail, but no harm.
+#
 neutron security-group-rule-create --direction ingress --protocol tcp --port_range_min 22 --port_range_max 22    ${SECGROUP_ID}
 neutron security-group-rule-create --direction ingress --protocol icmp  ${SECGROUP_ID}
-neutron security-group-rule-create --direction egress  --protocol tcp --port_range_min 1  --port_range_max 65536 ${SECGROUP_ID}
-neutron security-group-rule-create --direction egress  --protocol udp --port_range_min 1  --port_range_max 65536 ${SECGROUP_ID}
+neutron security-group-rule-create --direction egress  --protocol tcp --port_range_min 1  --port_range_max 65535 ${SECGROUP_ID}
+neutron security-group-rule-create --direction egress  --protocol udp --port_range_min 1  --port_range_max 65535 ${SECGROUP_ID}
 neutron security-group-rule-create --direction egress --protocol icmp  ${SECGROUP_ID}
