@@ -16,6 +16,10 @@
 #  yum: name=python-keyczar  state=installed
 #  environment: proxy_env  
 
+- name: Update system
+  shell: yum -y update
+  environment: proxy_env 
+
 - name: Create the hosts entry.
   template: src=hosts.j2 dest=/etc/hosts
 
