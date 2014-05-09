@@ -17,21 +17,21 @@
 - name: change fstab to mount cinder gluster mount
   lineinfile: state=present
               dest=/etc/fstab
-              line="{{ ansible_default_ipv4.address }}:cinder   /mnt/gv-cinder glusterfs rw,allow_other,max_read=131072 0 0"
+              line="{{ hostvars[groups.gluster_nodes[0]].ansible_default_ipv4.address }}:cinder /mnt/gv-cinder glusterfs rw,allow_other,max_read=131072 0 0"
               regexp="/mnt/gv-cinder"
   tags: gluster_volume
 
 - name: change fstab to mount nova instances gluster mount
   lineinfile: state=present
               dest=/etc/fstab
-              line="{{ ansible_default_ipv4.address }}:nova /mnt/gv-nova  glusterfs rw,allow_other,max_read=131072 0 0"
+              line="{{ hostvars[groups.gluster_nodes[0]].ansible_default_ipv4.address }}:nova /mnt/gv-nova  glusterfs rw,allow_other,max_read=131072 0 0"
               regexp="/mnt/gv-nova"
   tags: gluster_volume
 
 - name: change fstab to mount swift gluster mount
   lineinfile: state=present
               dest=/etc/fstab
-              line="{{ ansible_default_ipv4.address }}:swift     /mnt/gv-swift  glusterfs rw,allow_other,max_read=131072 0 0"
+              line="{{ hostvars[groups.gluster_nodes[0]].ansible_default_ipv4.address }}:swift /mnt/gv-swift  glusterfs rw,allow_other,max_read=131072 0 0"
               regexp="/mnt/gv-swift"
   tags: gluster_volume
 

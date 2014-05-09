@@ -15,27 +15,27 @@
 
 # Create a volume locally for now ...
 - name: set up a gluster volume with one brick 
-  shell: gluster volume create {{ item }} transport tcp ${ansible_eth0.ipv4.address}:/export/{{ item }}-brick
+  shell: gluster volume create {{ item }} transport tcp {{ ansible_all_ipv4_addresses[0] }}:/export/{{ item }}-brick
   with_items: [cinder, nova, swift]
   tags: gluster_volume
   ignore_errors: yes
 
 # Add other bricks from peers to the volume
 - name: add bricks to gluster volume for cinder
-  shell: gluster volume add-brick cinder ${gluster_vol_options} ${hostvars.{$item}.ansible_eth0.ipv4.address}:/export/cinder-brick
-  with_items: ${groups.gluster_nodes}
+  shell: gluster volume add-brick cinder {{ gluster_vol_options }} {{ hostvars.{$item}.ansible_all_ipv4_addresses[0] }}:/export/cinder-brick
+  with_items: "{{ groups.gluster_nodes }}"
   tags: gluster_volume
   ignore_errors: yes
 
 - name: add bricks to gluster volume for nova instances
-  shell: gluster volume add-brick nova   ${gluster_vol_options} ${hostvars.{$item}.ansible_eth0.ipv4.address}:/export/nova-brick
-  with_items: ${groups.gluster_nodes}
+  shell: gluster volume add-brick nova {{ gluster_vol_options }} {{ hostvars.{$item}.ansible_all_ipv4_addresses[0] }}:/export/nova-brick
+  with_items: "{{ groups.gluster_nodes }}"
   tags: gluster_volume
   ignore_errors: yes
 
 - name: add bricks to gluster volume for swift
-  shell: gluster volume add-brick swift  ${gluster_vol_options} ${hostvars.{$item}.ansible_eth0.ipv4.address}:/export/swift-brick
-  with_items: ${groups.gluster_nodes}
+  shell: gluster volume add-brick swift {{ gluster_vol_options }} {{ hostvars.{$item}.ansible_all_ipv4_addresses[0] }}:/export/swift-brick
+  with_items: "{{ groups.gluster_nodes }}"
   tags: gluster_volume
   ignore_errors: yes
 
@@ -60,7 +60,7 @@
   ignore_errors: yes
 
 - name: mount the gluster volume as another filesystem
-  shell: mount -t glusterfs ${ansible_eth0.ipv4.address}:{{ item }} /mnt/gv-{{ item }}
+  shell: mount -t glusterfs {{ ansible_all_ipv4_addresses[0] }}:{{ item }} /mnt/gv-{{ item }}
   with_items: [cinder, nova, swift]
   tags: gluster_volume
 
@@ -70,7 +70,7 @@
   tags: gluster_volume
 
 - name: run test 
-  shell: /tmp/gluster_test.sh ${ansible_eth0.ipv4.address}:{{ item }} /export/{{ item }}-brick
+  shell: /tmp/gluster_test.sh {{ ansible_all_ipv4_addresses[0] }}:{{ item }} /export/{{ item }}-brick
   with_items: [cinder, nova, swift]
   tags: gluster_volume
   ignore_errors: yes
