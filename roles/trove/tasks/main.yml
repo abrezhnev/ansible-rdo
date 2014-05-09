@@ -1,0 +1,25 @@
+# http://docs.openstack.org/developer/trove/dev/manual_install.html
+
+- name: install trove packages 
+  yum: name={{ item }} state=present
+  environment: proxy_env
+  with_items:
+   - python-trove
+   - openstack-trove
+   - openstack-trove-common
+   - openstack-trove-api
+   - openstack-trove-taskmanager
+   - openstack-trove-conductor
+
+- name: Create trove tenant
+  shell: keystone --os-username <OpenStackAdminUsername> --os-password <OpenStackAdminPassword>
+    --os-tenant-name <OpenStackAdminTenant> --os-auth-url http://<KeystoneIp>:35357/v2.0
+    tenant-create --name trove
+
+# keystone --os-username <OpenStackAdminUsername> --os-password <OpenStackAdminPassword>
+    --os-tenant-name <OpenStackAdminTenant> --os-auth-url http://<KeystoneIp>:35357/v2.0
+    user-create --name trove --pass trove --tenant trove
+
+# keystone --os-username <OpenStackAdminUsername> --os-password <OpenStackAdminPassword>
+    --os-tenant-name <OpenStackAdminTenant> --os-auth-url http://<KeystoneIp>:35357/v2.0
+    user-role-add --name trove --tenant trove --role admin

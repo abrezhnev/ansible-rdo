@@ -47,6 +47,9 @@ ospoc5.lab.noc.harvard.edu
 [openstack_heat]
 ospoc5.lab.noc.harvard.edu
 
+[openstack_trove]
+ospoc5.lab.noc.harvard.edu
+
 [openstack_compute]
 ospoc1.lab.noc.harvard.edu
 ospoc2.lab.noc.harvard.edu
