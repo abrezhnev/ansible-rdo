@@ -54,7 +54,6 @@
   yum: name={{ item }} state=present
   environment: proxy_env
   with_items:
-   - openstack-neutron-vpn-agent
    - openstack-savanna
 
 - name: Fix permissions for nova if using a gluster mount
