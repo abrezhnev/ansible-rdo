@@ -15,6 +15,7 @@
 
 - name: create these basic objects for admin
   shell: source /root/keystonerc_admin && /root/create_admin_objects.sh
+  environment: proxy_env   
   ignore_errors: yes
 
 - name: change admin quota so we can bang on this thing
@@ -26,6 +27,6 @@
   git: repo=https://github.com/robparrott/openstack-post-config.git dest=/tmp/openstack-post-config force=yes
   ignore_errors: yes
 
-#- name: Now run post-config scripts
-#  shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
-#  ignore_errors: yes
+- name: Now run post-config scripts
+  shell: cd /tmp/openstack-post-config && bash ./main.sh >> /tmp/post-config.log
+  ignore_errors: yes
