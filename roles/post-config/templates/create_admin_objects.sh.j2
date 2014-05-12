@@ -44,7 +44,7 @@ tenant_id=$( get_k_id tenant " ${tenant} " )
 nova    quota-update --instances 100 ${tenant_id}
 nova    quota-update --cores     100 ${tenant_id}
 nova    quota-update --ram    102400 ${tenant_id}
-neutron quota-update --ports     200 
+neutron quota-update --port      200 
 
 #
 # Make sure we have an image to use 
