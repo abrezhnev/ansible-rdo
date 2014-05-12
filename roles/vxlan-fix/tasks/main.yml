@@ -1,0 +1,5 @@
+- name: Copy over fixed ovs_lib.py that doesn't fail to start
+  copy: src=ovs_lib.py dest=/usr/lib/python2.6/site-packages/neutron/agent/linux/ovs_lib.py mode=0644
+
+- name: restart agents
+  service: name=neutron-openvswitch-agent state=restarted
