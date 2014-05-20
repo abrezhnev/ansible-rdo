@@ -1,0 +1,18 @@
+
+- name: Install packages for sahara service
+  yum: name={{ item }} state=present
+  environment: proxy_env
+  with_items:
+   - openstack-savanna
+   - python-django-sahara
+   - python-saharaclient
+
+- name: Create sahara.conf
+  template: src=sahara.conf.j2 dest=/etc/sahara/sahara.conf mode=0660
+
+- name: Create database schema for sahara
+  command: /usr/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
+
+- name: restart sahara
+  service: name=openstack-sahara-api state=restarted 
+
