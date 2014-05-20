@@ -142,24 +142,24 @@
 # Setup Swift 
 #
 
-- name: read dev for swift logical volume or loopback device 
-  shell: |
-    DEV=$( lvs | grep swift | awk  '{ print "/dev/mapper/" $2 "-" $1 }' )
-    if [ -z ${DEV} ]; then 
-      DEV=$( losetup -a | grep swift | tail -1 | awk -F: '{print $1}' )
-    fi
-    echo ${DEV}
-  register: swiftdev
+# - name: read dev for swift logical volume or loopback device 
+#   shell: |
+#     DEV=$( lvs | grep swift | awk  '{ print "/dev/mapper/" $2 "-" $1 }' )
+#     if [ -z ${DEV} ]; then 
+#       DEV=$( losetup -a | grep swift | tail -1 | awk -F: '{print $1}' )
+#     fi
+#     echo ${DEV}
+#   register: swiftdev
 
-- name: format swift brick FS for gluster (will fail if already formatted)
-  shell: "mkfs.xfs -f -i size=512 {{ swiftdev.stdout }}"
-  ignore_errors: yes
-  tags:
-    - brick
+# - name: format swift brick FS for gluster (will fail if already formatted)
+#   shell: "mkfs.xfs -f -i size=512 {{ swiftdev.stdout }}"
+#   ignore_errors: yes
+#   tags:
+#     - brick
 
-- name: create mount entry for the new swift brick, and mount
-  mount: name={{ brick_mount_swift}} src={{ swiftdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
-  ignore_errors: yes
-  tags:
-    - brick
+# - name: create mount entry for the new swift brick, and mount
+#   mount: name={{ brick_mount_swift}} src={{ swiftdev.stdout }} fstype=xfs opts=defaults passno=2 state=mounted
+#   ignore_errors: yes
+#   tags:
+#     - brick
 
