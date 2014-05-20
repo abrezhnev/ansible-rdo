@@ -27,7 +27,9 @@
   register: admin_token 
 
 - name: read in IP used for services
-  shell: "keystone --os-token {{ admin_token.stdout }} endpoint-list | grep :8774/ | awk -F/ '{print $3}' |awk -F: '{print $1}'"
+  shell: |
+    KEYSTONE="keystone --os-username admin --os-password {{ admin_pass.stdout }} --os-tenant-name admin --os-auth-url http://127.0.0.1:35357/v2.0"
+    ${KEYSTONE} endpoint-list | grep :8774/ | awk -F/ '{print $3}' |awk -F: '{print $1}'
   register: endpoint_ip
 
 #
@@ -38,13 +40,89 @@
   register: tenant
 
 - name: Create trove user
-  keystone_user: token={{ admin_token.stdout }} user=trove tenant=trove password={{ admin_pass.stdout }}
+  keystone_user: token={{ admin_token.stdout }} user=trove tenant=trove email=trove@localhost password={{ admin_pass.stdout }}
 
-- name: give trove user admin rights  
-  shell: keystone --os-token {{ admin_token.stdout }} --os-auth-url http://127.0.0.1:35357/v2.0 user-role-add --user trove --tenant trove --role admin
+- name: Give trove user admin rights 
+  keystone_user: token={{ admin_token.stdout }} user=trove tenant=trove role=admin 
 
-- name: create service account
-  shell: keystone --os-token {{ admin_token.stdout }}  --os-tenant-name admin --os-auth-url http://127.0.0.1:35357/v2.0 service-create --name trove --type database
+#- name: give trove user admin rights  
+#  shell: keystone --os-token {{ admin_token.stdout }} --os-auth-url http://127.0.0.1:35357/v2.0 user-role-add --user trove --tenant trove --role admin
 
-- name: create endpoint entries for trove
-  shell: keystone --os-token {{ admin_token.stdout }}  --os-tenant-name admin --os-auth-url http://127.0.0.1:35357/v2.0 endpoint-create --service trove --region RegionOne --publicurl 'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s' --adminurl 'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s' --internalurl 'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s'
+- name: create service account for trove
+  shell: |
+    KEYSTONE="keystone --os-username admin --os-password {{ admin_pass.stdout }} --os-tenant-name admin --os-auth-url http://127.0.0.1:35357/v2.0"
+    ID=$( ${KEYSTONE} service-list | grep trove | awk  '{print $2}' )
+    echo
+    if [ -z ${ID} ]; then 
+      ${KEYSTONE} service-create --name trove --type database --description "Trove Database Service"
+    fi
+
+- name: create endpoints for trove service
+  shell: |
+    KEYSTONE="keystone --os-username admin --os-password {{ admin_pass.stdout }} --os-tenant-name admin --os-auth-url http://127.0.0.1:35357/v2.0"
+    ID=$( ${KEYSTONE} endpoint-list | grep :8779/  | awk  '{print $2}' )
+    if [ -z ${ID} ]; then 
+      ENDPT_IP=$( ${KEYSTONE} endpoint-list | grep :8774/ | awk -F/ '{print $3}' |awk -F: '{print $1}' )
+      ${KEYSTONE} endpoint-create \
+          --service trove --region RegionOne \
+          --publicurl   'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s' \
+          --adminurl    'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s' \
+          --internalurl 'http://{{ endpoint_ip.stdout }}:8779/v1.0/$(tenant_id)s'
+    fi
+
+
+- name: restart services to notify of trove service
+  service: name={{ item }} state=restarted
+  with_items:
+   - httpd
+   - openstack-keystone
+   - memcached
+
+#
+# Setup an image to use with Trove
+#
+
+- name: pull down image for trove
+  shell: cd /tmp && wget http://cloud-images.ubuntu.com/precise/current/precise-server-cloudimg-amd64-disk1.img
+         creates=/tmp/precise-server-cloudimg-amd64-disk1.img
+
+- name: convert trove image to qcow2
+  shell: cd /tmp && qemu-img convert -O qcow2 precise-server-cloudimg-amd64-disk1.img precise.qcow2
+         creates=/tmp/precise.qcow2
+
+- name: upload that image to glance
+  shell: |
+    GLANCE="glance --os-username trove --os-password {{ admin_pass.stdout }} --os-tenant-name trove --os-auth-url http://127.0.0.1:35357/v2.0"
+    IMAGE_ID=$( $GLANCE image-list | grep trove-image | awk '{print $2}' )
+    if [ -z ${IMAGE_ID} ]; then
+      ${GLANCE} image-create --name trove-image --public --container-format ovf --disk-format qcow2 --owner trove < /tmp/precise.qcow2
+    fi
+
+#
+# Prepase trove database
+#
+- name: setup trove database 
+  shell: trove-manage --config-file=/etc/trove/trove.conf db_recreate trove_test.sqlite mysql fake
+
+- name: setup trove database 
+  shell: |
+    trove-manage --config-file=/etc/trove/trove.conf image_update mysql \
+      `nova --os-username trove --os-password {{ admin_pass.stdout }}  --os-tenant-name trove \
+            --os-auth-url http://127.0.0.1:5000/v2.0 image-list | awk '/trove-image/ {print $2}
+
+#
+# Restart trove services
+#
+
+- name: restart services to notify of trove service
+  service: name={{ item }} state=restarted
+  with_items:
+   - openstack-trove-api
+   - openstack-trove-conductor
+   - openstack-trove-taskmanager
+
+
+
+
+
+
