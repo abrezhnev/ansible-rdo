@@ -17,17 +17,18 @@
 - hosts: openstack_compute
   roles: [gluster-client]
 
-- hosts: swift_storage_nodes
-  roles: [gluster-client]
+#- hosts: swift_storage_nodes
+#  roles: [gluster-client]
 
 - hosts: openstack_controller
   roles:
    - packstack
-#   - controller  # don't use this ...
 
-- hosts: openstack_neutron_l3
-  roles:
-   - network-gateway
+#
+# This is a temp hack unti upstream code is fixed.
+#
+- hosts: [openstack_compute, openstack_controller, openstack_neutron_l3]
+  roles: [ vxlan-fix ]
 
 - hosts: openstack_neutron_l3
   roles:
@@ -41,15 +42,10 @@
   roles:
    - network-extras-gui
 
-- hosts: openstack_glance
-#  roles: [glance]
-
-- hosts: openstack_compute
+- hosts: openstack_controller
   roles:
-#   - compute
-
-#- hosts: openstack_glance
-#  roles: [glance]
+#   - trove
+#   - sahara
 
 - hosts: openstack_controller
   roles:
