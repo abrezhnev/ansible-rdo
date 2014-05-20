@@ -1,0 +1,21 @@
+INSTALLED_APPS = [
+    'openstack_dashboard',
+    'django.contrib.contenttypes',
+    'django.contrib.auth',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'compressor',
+    'horizon',
+    'openstack_dashboard.dashboards.project',
+    'openstack_dashboard.dashboards.admin',
+    'openstack_dashboard.dashboards.settings',
+    'openstack_auth',
+    'openstack_dashboard.dashboards.router',
+    'savannadashboard'
+]
+
+SAVANNA_URL = 'http://localhost:8386/v1.1'
+SAVANNA_USE_NEUTRON = True
+AUTO_ASSIGNMENT_ENABLED = False

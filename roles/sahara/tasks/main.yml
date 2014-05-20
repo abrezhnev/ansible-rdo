@@ -7,12 +7,34 @@
    - python-django-sahara
    - python-saharaclient
 
+#
+# Read admin credentials
+#
+- name: read in admin password
+  shell: grep OS_PASSWORD /root/keystonerc_admin | awk -F= '{ print $2 }'
+  register: admin_pass
+
 - name: Create sahara.conf
   template: src=sahara.conf.j2 dest=/etc/sahara/sahara.conf mode=0660
 
-- name: Create database schema for sahara
-  command: /usr/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
+- name: set admin password for sahara in sahara.conf
+  command: openstack-config --set /etc/sahara/sahara.conf DEFAULT os_admin_password {{ admin_pass.stdout }}
+
+#- name: Create database schema for sahara
+#  command: /usr/bin/sahara-db-manage --config-file /etc/sahara/sahara.conf upgrade head
 
 - name: restart sahara
   service: name=openstack-sahara-api state=restarted 
 
+#
+# Setup dashboard GUI
+#
+
+- name: copy over snippet file 
+  template: src=local_settings.snippet dest=/etc/openstack-dashboard/local_settings.snippet
+
+- name: append to local_settings
+  command: cd /etc/openstack-dashboard && cat local_settings.snippet >> local_settings
+
+- name: restart httpd
+  service: name=httpd state=restarted 
