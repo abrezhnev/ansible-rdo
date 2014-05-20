@@ -16,6 +16,20 @@
   
 %}{%- endmacro %}
 
+{% macro swift_ip_dev_list(groupname) -%}{% 
+
+  for host in groups[groupname]
+
+    %}{% set interface = hostvars[host]['primary_if'] 
+
+    %}{{ hostvars[host]['ansible_'+interface]['ipv4']['address'] }}/{{ swift_device }}{% 
+    
+    if not loop.last %},{% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+
 {% macro gluster_mnt_list(groupname, mntpnt) -%}{% 
 
   for host in groups[groupname] 
@@ -61,7 +75,7 @@ CONFIG_HORIZON_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack Object
 # Storage (Swift)
-CONFIG_SWIFT_INSTALL=n
+CONFIG_SWIFT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
@@ -434,7 +448,7 @@ CONFIG_SWIFT_PROXY_HOSTS={{ ip_list('swift_proxy_nodes') }}
 # on 127.0.0.1 as a swift storage device(packstack does not create the
 # filesystem, you must do this first), if /dev is omitted Packstack
 # will create a loopback device for a test setup
-CONFIG_SWIFT_STORAGE_HOSTS={{ ip_list('swift_storage_nodes') }}
+CONFIG_SWIFT_STORAGE_HOSTS={{ swift_ip_dev_list('swift_storage_nodes') }}
 
 # Number of swift storage zones, this number MUST be no bigger than
 # the number of storage devices configured

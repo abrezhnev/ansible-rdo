@@ -49,3 +49,4 @@ gluster_volume_name: gv0
 # Swift
 #
 swift_volume_size: 10G
+swift_device: dm-4
