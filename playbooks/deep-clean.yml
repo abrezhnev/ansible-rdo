@@ -347,7 +347,7 @@
      copy: src=../roles/gluster/files/clear-gluster-xattr.sh  dest=/tmp/clear-gluster-xattr.sh owner=root group=root mode=0755
 
    - name: install attr package
-     yum: name=${item} state=installed
+     yum: name={{ item }} state=installed
      with_items: [which, attr]
 
    - name: clear out any xattributes on cany bricks if used before ...
