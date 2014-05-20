@@ -57,7 +57,7 @@ ospoc3.lab.noc.harvard.edu
 
 [swift_proxy_nodes]
 ospoc3.lab.noc.harvard.edu
-ospoc4.lab.noc.harvard.edu
+#ospoc4.lab.noc.harvard.edu -- only 1 is allowed for now.
 
 [swift_storage_nodes]
 ospoc3.lab.noc.harvard.edu
