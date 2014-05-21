@@ -112,6 +112,7 @@
    - trove.conf
    - trove-taskmanager.conf 
    - trove-conductor.conf
+   - api-paste.init
 
 - name: set admin password for sahara in sahara.conf
   command: openstack-config --set /etc/sahara/sahara.conf DEFAULT os_admin_password {{ admin_pass.stdout }}
@@ -131,19 +132,6 @@
 - name: setup trove database 
   shell: trove-manage --config-file=/etc/trove/trove.conf db_sync
 
-- name: create a trove datastore
-  shell: trove-manage datastore_update mysql ''
-  with_items:
-   - mysql
-   - redis
-   - mongodb
-   - cassandra
-   - couchbase
-
-
-#- name: setup trove database 
-#  shell: trove-manage --config-file=/etc/trove/trove.conf db_recreate trove_test.sqlite mysql fake
-
 
 #
 # Restart trove services
@@ -159,9 +147,19 @@
    - openstack-trove-conductor
    - openstack-trove-taskmanager
 
+
 #
 # setup trove image 
 #
+
+- name: create a trove datastore
+  shell: trove-manage datastore_update mysql ''
+  with_items:
+   - mysql
+   - redis
+   - mongodb
+   - cassandra
+   - couchbase
 
 - name: setup trove image
   shell: |
