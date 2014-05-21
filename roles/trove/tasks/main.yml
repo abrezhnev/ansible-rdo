@@ -1,5 +1,5 @@
 # http://docs.openstack.org/developer/trove/dev/manual_install.html
-
+# http://docs.openstack.org/trunk/install-guide/install/yum/content/trove-install.html
 - name: install trove packages 
   yum: name={{ item }} state=present
   environment: proxy_env
@@ -35,15 +35,15 @@
 #
 # Create trove objects in keystone
 #
-- name: Create trove tenant
-  keystone_user: token={{ admin_token.stdout }} tenant=trove tenant_description="Trove"
-  register: tenant
+#- name: Create trove tenant
+#  keystone_user: token={{ admin_token.stdout }} tenant=trove tenant_description="Trove"
+#  register: tenant
 
 - name: Create trove user
-  keystone_user: token={{ admin_token.stdout }} user=trove tenant=trove email=trove@localhost password={{ admin_pass.stdout }}
+  keystone_user: token={{ admin_token.stdout }} user=trove tenant=services email=trove@localhost password={{ admin_pass.stdout }}
 
 - name: Give trove user admin rights 
-  keystone_user: token={{ admin_token.stdout }} user=trove tenant=trove role=admin 
+  keystone_user: token={{ admin_token.stdout }} user=trove tenant=services role=admin 
 
 #- name: give trove user admin rights  
 #  shell: keystone --os-token {{ admin_token.stdout }} --os-auth-url http://127.0.0.1:35357/v2.0 user-role-add --user trove --tenant trove --role admin
@@ -92,34 +92,85 @@
 
 - name: upload that image to glance
   shell: |
-    GLANCE="glance --os-username trove --os-password {{ admin_pass.stdout }} --os-tenant-name trove --os-auth-url http://127.0.0.1:35357/v2.0"
+    GLANCE="glance --os-username trove --os-password {{ admin_pass.stdout }} --os-tenant-name services --os-auth-url http://127.0.0.1:35357/v2.0"
     IMAGE_ID=$( $GLANCE image-list | grep trove-image | awk '{print $2}' )
     if [ -z ${IMAGE_ID} ]; then
       ${GLANCE} image-create --name trove-image --public --container-format ovf --disk-format qcow2 --owner trove < /tmp/precise.qcow2
     fi
 
 #
-# Prepase trove database
+# Configure Trove
 #
-- name: setup trove database 
-  shell: trove-manage --config-file=/etc/trove/trove.conf db_recreate trove_test.sqlite mysql fake
+
+- name: read in novas' DB password
+  shell: grep CONFIG_NOVA_DB_PW /tmp/packstack-passwords.txt | awk -F= '{ print $2 }'
+  register: nova_db_password
+
+- name: Create trove config files
+  template: src={{ item }}.j2 dest=/etc/trove/{{ item }} owner=trove group=trove mode=0600
+  with_items:
+   - trove.conf
+   - trove-taskmanager.conf 
+   - trove-conductor.conf
+
+- name: set admin password for sahara in sahara.conf
+  command: openstack-config --set /etc/sahara/sahara.conf DEFAULT os_admin_password {{ admin_pass.stdout }}
+
+
+#
+# Prepare trove database
+#
+
+- name: Create SQL file to creat trove db
+  template: src=create.sql.j2 dest=/etc/trove/create.sql owner=trove group=trove mode=0600
+
+- name: create trove database 
+  shell: cat /etc/trove/create.sql | mysql 
+  ignore_errors: yes
 
 - name: setup trove database 
-  shell: |
-    trove-manage --config-file=/etc/trove/trove.conf image_update mysql \
-      `nova --os-username trove --os-password {{ admin_pass.stdout }}  --os-tenant-name trove \
-            --os-auth-url http://127.0.0.1:5000/v2.0 image-list | awk '/trove-image/ {print $2}
+  shell: trove-manage --config-file=/etc/trove/trove.conf db_sync
+
+- name: create a trove datastore
+  shell: trove-manage datastore_update mysql ''
+  with_items:
+   - mysql
+   - redis
+   - mongodb
+   - cassandra
+   - couchbase
+
+
+#- name: setup trove database 
+#  shell: trove-manage --config-file=/etc/trove/trove.conf db_recreate trove_test.sqlite mysql fake
+
 
 #
 # Restart trove services
 #
 
+- name: fix dir permissions
+  command: chown -R trove.trove /var/log/trove 
+
 - name: restart services to notify of trove service
-  service: name={{ item }} state=restarted
+  service: name={{ item }} state=restarted enabled=yes
   with_items:
    - openstack-trove-api
    - openstack-trove-conductor
    - openstack-trove-taskmanager
+
+#
+# setup trove image 
+#
+
+- name: setup trove image
+  shell: |
+    IMAGE_ID=$( nova --os-username trove --os-password {{ admin_pass.stdout }}  --os-tenant-name services \
+                      --os-auth-url http://127.0.0.1:5000/v2.0 image-list | awk '/trove-image/ {print $2}' )
+    trove-manage --config-file=/etc/trove/trove.conf datastore_version_update \
+       mysql mysql-5.5 mysql ${IMAGE_ID} mysql-server-5.5 1
+
+
 
 
 

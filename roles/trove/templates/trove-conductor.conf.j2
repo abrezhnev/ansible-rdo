@@ -1,0 +1,30 @@
+{% macro ip_list(groupname) -%}{% 
+
+  for host in groups[groupname]
+
+    %}{% set interface = hostvars[host]['primary_if'] 
+
+    %}{{ hostvars[host]['ansible_'+interface]['ipv4']['address'] }}{% 
+    
+    if not loop.last %},{% endif %}{%
+
+  endfor 
+  
+%}{%- endmacro %}
+[DEFAULT]
+verbose = True
+debug = True
+control_exchange = trove
+
+trove_auth_url=http://{{ ip_list('openstack_controller') }}:5000/v2.0
+nova_compute_url=http://{{ ip_list('openstack_controller') }}:8774/v2
+cinder_url=http://{{ ip_list('openstack_controller') }}:8776/v1
+swift_url=http://{{ ip_list('swift_proxy_nodes') }}:8080/v1/AUTH_
+
+
+#rpc_backend=rabbitmq
+rabbit_host={{ ip_list('openstack_controller') }}
+rabbit_password=guest
+
+log_dir = /var/log/trove
+log_file=trove-conductor.log
